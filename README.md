@@ -84,12 +84,12 @@ Different phases activate different "agent personas" with specialized focus:
 
 ## Supported Tools
 
-| Tool | Status | Folder |
-|------|--------|--------|
-| [Claude Code](https://claude.ai/code) | Ready | `/claude` |
-| [Windsurf Cascade](https://codeium.com/windsurf) | Ready | `/cascade` |
-| Cursor | Coming | - |
-| Aider | Coming | - |
+| Tool | Status | Folder | Documentation |
+|------|--------|--------|---------------|
+| [Claude Code](https://claude.ai/code) | Ready | `/claude` | [Setup Guide](examples/claude-setup.md) |
+| [Windsurf](https://codeium.com/windsurf) | Ready | `/windsurf` | [Setup Guide](examples/windsurf-setup.md) |
+| [Cursor](https://cursor.com) | Ready | `/cursor` | [Setup Guide](examples/cursor-setup.md) |
+| [Aider](https://aider.chat) | Ready | `/aider` | [Setup Guide](examples/aider-setup.md) |
 
 ---
 
@@ -97,109 +97,120 @@ Different phases activate different "agent personas" with specialized focus:
 
 ### Claude Code
 
-1. **Copy the `.claude` folder** to your project root:
-   ```bash
-   cp -r claude/ your-project/.claude/
-   ```
+```bash
+# Copy .claude folder to your project
+cp -r claude/ your-project/.claude/
 
-2. **Copy `CLAUDE.md`** to your project root:
-   ```bash
-   cp claude/CLAUDE.md your-project/CLAUDE.md
-   ```
+# Copy CLAUDE.md to project root
+cp claude/CLAUDE.md your-project/CLAUDE.md
 
-3. **Create engineering folder** (gitignored working docs):
-   ```bash
-   mkdir -p your-project/.claude/engineering/{frd,design,test-plans,reviews,spikes,bugs,releases}
-   echo ".claude/engineering/" >> your-project/.gitignore
-   ```
+# Create engineering folder (gitignore this)
+mkdir -p your-project/.claude/engineering/{frd,design,test-plans,reviews}
+echo ".claude/engineering/" >> your-project/.gitignore
+```
 
-4. **Use workflows**:
-   ```
-   /feature Add user authentication
-   /bug Login fails with special characters
-   /plan Refactor the database module
-   /commit
-   ```
+**Usage:** `/feature`, `/bug`, `/plan`, `/refactor`, `/commit`
 
-### Windsurf Cascade
+### Windsurf
 
-1. **Copy `.windsurfrules`** to your project root:
-   ```bash
-   cp cascade/.windsurfrules your-project/.windsurfrules
-   ```
+```bash
+# Copy .windsurf folder to your project
+cp -r windsurf/.windsurf/ your-project/.windsurf/
+```
 
-2. **Use workflow triggers** in your prompts:
-   ```
-   feature: Add user authentication
-   bug: Login fails with special characters
-   plan: Refactor the database module
-   ```
+**Usage:** `@feature-workflow`, `@bug-workflow`, `@plan-workflow`, or prefix with `feature:`, `bug:`, `plan:`
+
+### Cursor
+
+```bash
+# Copy .cursor folder to your project
+cp -r cursor/.cursor/ your-project/.cursor/
+```
+
+**Usage:** `@feature-workflow`, `@bug-workflow`, `@plan-workflow`, `@refactor-workflow`
+
+### Aider
+
+```bash
+# Copy conventions file and config to your project
+cp aider/CONVENTIONS.md your-project/CONVENTIONS.md
+cp aider/.aider.conf.yml your-project/.aider.conf.yml
+```
+
+**Usage:** Conventions are automatically loaded. Use workflow keywords like `feature:`, `bug:`, `plan:` in prompts.
 
 ---
 
 ## Available Workflows
 
-### `/feature` - Full SDLC
+### Feature - Full SDLC
 For new features requiring complete development lifecycle.
 
 **Phases:** Requirements → Design → Test Plan → Implementation → Review → Docs → Commit
 
-### `/bug` - Bug Fix
+### Bug Fix
 For investigating and fixing issues.
 
 **Phases:** Investigation → Root Cause → Fix → Regression Test → Commit
 
-### `/plan` - Quick Analysis
+### Plan - Quick Analysis
 For smaller tasks that need planning but not full SDLC.
 
 **Phases:** Understand → Options → Recommend → Approve → Implement
 
-### `/refactor` - Code Restructuring
+### Refactor - Code Restructuring
 For improving code structure without changing behavior.
 
 **Phases:** Analyze → Propose → Impact Assessment → Implement → Verify → Commit
 
-### `/spike` - Technical Research
-For investigating technical questions or unknowns.
+---
 
-**Output:** Investigation report with findings and recommendations
+## Tool-Specific Details
 
-### `/commit` - Controlled Commit
-For committing with proper review.
+### Claude Code
+- Uses slash commands: `/feature`, `/bug`, `/plan`, `/refactor`, `/commit`, `/release`, `/spike`
+- Agents defined in `.claude/agents/`
+- Document templates in `.claude/templates/`
+- Working docs in `.claude/engineering/` (gitignored)
 
-**Checks:** Tests pass → Docs updated → User approves → Commit
+### Windsurf
+- Uses `.windsurf/rules/` directory (recommended)
+- Rules activated via `@mention` or automatically based on context
+- Character limit: 6000 per rule, 12000 total
+- [Official docs](https://docs.windsurf.com/windsurf/cascade/memories)
 
-### `/release` - Version Management
-For managing version releases.
+### Cursor
+- Uses `.cursor/rules/` directory with YAML frontmatter
+- `alwaysApply: true` for core rules, `false` for workflow rules
+- Reference rules with `@rule-name` in chat
+- [Official docs](https://cursor.com/docs/context/rules)
 
-**Phases:** Version bump → Changelog → Tag → Release notes
+### Aider
+- Uses `CONVENTIONS.md` loaded via `--read` flag
+- Configure in `.aider.conf.yml` for automatic loading
+- Mark as read-only for prompt caching benefits
+- [Official docs](https://aider.chat/docs/usage/conventions.html)
 
 ---
 
 ## Customization
 
-### Adding New Commands
+### Adding New Workflows
 
-Create a markdown file in `commands/`:
+Each tool has its own format:
 
-```markdown
----
-description: My custom workflow
-argument-hint: [what to pass]
----
-
-# My Workflow
-
-Instructions for the AI...
-```
+**Claude Code:** Create markdown file in `.claude/commands/` with frontmatter
+**Windsurf:** Create markdown file in `.windsurf/rules/`
+**Cursor:** Create markdown file in `.cursor/rules/` with YAML frontmatter
+**Aider:** Add section to `CONVENTIONS.md`
 
 ### Modifying Agent Behavior
 
-Edit files in `agents/` to customize how each persona behaves.
+Edit the agent definitions in each tool's folder to customize personas.
 
 ### Adding Templates
 
-Add document templates to `templates/` for standardized outputs.
+Templates in `/templates` folders provide standardized document formats for FRDs, Design docs, Test Plans, etc.
 
 ---
 
@@ -231,10 +242,11 @@ AI assistants love adding fallbacks and backwards compatibility "just in case." 
 
 ## Examples
 
-See the `/examples` folder for:
-- Monorepo setup guide
-- Single project setup guide
-- Sample workflow sessions
+See the `/examples` folder for detailed setup guides:
+- [Claude Code Setup](examples/claude-setup.md)
+- [Windsurf Setup](examples/windsurf-setup.md)
+- [Cursor Setup](examples/cursor-setup.md)
+- [Aider Setup](examples/aider-setup.md)
 
 ---
 
@@ -248,7 +260,7 @@ Contributions welcome! Please:
 4. Submit a pull request
 
 Especially welcome:
-- Support for additional AI tools (Cursor, Aider, etc.)
+- Support for additional AI tools
 - Improved workflow definitions
 - Better templates
 - Documentation improvements
@@ -266,3 +278,12 @@ MIT License - See [LICENSE](LICENSE)
 Created by [QwickApps](https://github.com/qwickapps)
 
 Inspired by the frustration of cleaning up after overeager AI assistants.
+
+---
+
+## Sources
+
+- [Cursor Rules Documentation](https://cursor.com/docs/context/rules)
+- [Aider Conventions Documentation](https://aider.chat/docs/usage/conventions.html)
+- [Windsurf Cascade Memories](https://docs.windsurf.com/windsurf/cascade/memories)
+- [Awesome Cursorrules](https://github.com/PatrickJS/awesome-cursorrules)

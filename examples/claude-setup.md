@@ -13,51 +13,100 @@ This guide walks through setting up AI SDLC Workflows with Claude Code.
 
 ```bash
 # From the ai-sdlc-workflows repository
-cp -r claude/ /path/to/your-project/.claude/
+cp -r claude/ your-project/.claude/
 ```
 
 Your project should now have:
 ```
 your-project/
 ├── .claude/
-│   ├── commands/
-│   ├── templates/
-│   ├── agents/
+│   ├── commands/       # Slash commands (/feature, /bug, etc.)
+│   ├── templates/      # Document templates (FRD, Design, etc.)
+│   ├── agents/         # Agent persona definitions
+│   ├── memories/       # ADRs (architectural decisions)
+│   ├── engineering/    # Working documents (gitignore this)
 │   └── settings.example.json
+├── CLAUDE.md           # Copy this too
 └── ... your code ...
 ```
 
-### 2. Copy CLAUDE.md
+### 2. Copy CLAUDE.md to Project Root
 
 ```bash
-cp claude/CLAUDE.md /path/to/your-project/CLAUDE.md
+cp claude/CLAUDE.md your-project/CLAUDE.md
 ```
 
 This file contains the critical rules that Claude Code will follow.
 
-### 3. Create Engineering Folder
+### 3. Update .gitignore
+
+Add working documents to gitignore:
 
 ```bash
-mkdir -p /path/to/your-project/.claude/engineering/{frd,design,test-plans,reviews,spikes,bugs,releases}
+echo ".claude/engineering/" >> your-project/.gitignore
+echo ".claude/settings.local.json" >> your-project/.gitignore
 ```
 
-### 4. Update .gitignore
+### 4. (Optional) Configure Settings
 
-Add to your `.gitignore`:
-```
-# AI working documents (not committed)
-.claude/engineering/
-.claude/settings.local.json
-```
-
-### 5. (Optional) Customize Settings
-
-Copy and modify the settings:
 ```bash
 cp .claude/settings.example.json .claude/settings.json
 ```
 
 Edit permissions as needed for your project.
+
+## Folder Structure Explained
+
+### commands/
+Slash commands that trigger workflows:
+- `/feature` - Full SDLC feature development
+- `/bug` - Bug investigation and fix
+- `/plan` - Quick planning
+- `/refactor` - Code restructuring
+- `/commit` - Controlled commit
+- `/release` - Version management
+- `/spike` - Technical research
+- `/code-review` - Code review
+- `/docs` - Documentation update
+
+### templates/
+Document templates used during workflows:
+- `FRD.md` - Feature Request Document
+- `DESIGN.md` - Design Proposal
+- `TEST-PLAN.md` - Test Plan
+- `REVIEW.md` - Code Review Report
+- `BUG.md` - Bug Analysis
+- `SPIKE.md` - Investigation Report
+- `RELEASE.md` - Release Document
+
+### agents/
+Agent personas for different SDLC phases:
+- `architect.md` - Design phase
+- `coder.md` - Implementation phase
+- `product-manager.md` - Requirements phase
+- `quality-engineer.md` - Testing phase
+- `reviewer.md` - Review phase
+- `tech-writer.md` - Documentation phase
+- `devops.md` - Deployment phase
+- `engineering-manager.md` - Coordination
+
+### memories/
+Architecture Decision Records (ADRs):
+- Documented decisions that affect the project
+- Indexed in `ADR-INDEX.md`
+- Committed to version control
+
+### engineering/
+Working documents created during workflows:
+- `frd/` - Feature Request Documents
+- `design/` - Design Proposals
+- `test-plans/` - Test Plans
+- `reviews/` - Code Review Reports
+- `spikes/` - Investigation Reports
+- `bugs/` - Bug Analysis
+- `releases/` - Release Documents
+
+**These are NOT committed** - they guide implementation but aren't deliverables.
 
 ## Using Workflows
 
@@ -67,14 +116,16 @@ Edit permissions as needed for your project.
 /feature Add user authentication with OAuth2
 ```
 
-Claude will:
-1. Ask clarifying questions (Product Manager)
-2. Propose a design (Architect)
-3. Define test strategy (Quality Engineer)
-4. Implement with tests (Coder)
-5. Review the code (Reviewer)
-6. Update documentation (Tech Writer)
-7. Wait for approval to commit
+Claude will follow the full SDLC:
+1. **Requirements** (Product Manager) - Ask clarifying questions
+2. **Design** (Architect) - Propose architecture, check existing patterns
+3. **Test Strategy** (Quality Engineer) - Define test plan
+4. **Implementation** (Coder) - Write code and tests
+5. **Review** (Reviewer) - Check quality and security
+6. **Documentation** (Tech Writer) - Update README, CHANGELOG
+7. **Commit** - Show diff, wait for approval
+
+Each phase requires your explicit "approved" to proceed.
 
 ### Fix a Bug
 
@@ -82,12 +133,12 @@ Claude will:
 /bug Users can't log in with email containing "+"
 ```
 
-Claude will:
-1. Investigate the issue
-2. Identify root cause
-3. Propose fix
-4. Add regression test
-5. Wait for approval to commit
+Workflow:
+1. **Investigation** - Understand and reproduce
+2. **Root Cause** - Find the actual problem
+3. **Fix** - Implement minimal fix
+4. **Regression Test** - Add test to prevent recurrence
+5. **Commit** - Wait for approval
 
 ### Quick Planning
 
@@ -95,12 +146,11 @@ Claude will:
 /plan Add a helper function for date formatting
 ```
 
-Claude will:
-1. Analyze the request
-2. Check for existing utilities
-3. Present options
-4. Wait for approval
-5. Implement
+Workflow:
+1. **Analyze** - Understand the request
+2. **Options** - Present approaches with tradeoffs
+3. **Approve** - Wait for selection
+4. **Implement** - Execute chosen approach
 
 ### Controlled Commit
 
@@ -108,7 +158,7 @@ Claude will:
 /commit
 ```
 
-Claude will:
+Workflow:
 1. Run tests
 2. Check documentation is updated
 3. Show diff
@@ -153,6 +203,8 @@ Design proposal:
 3. Use localStorage for persistence
 4. Check prefers-color-scheme on initial load
 
+REUSE: Following existing context pattern from AuthContext
+
 [Shows design document]
 
 Approve to proceed to test planning?
@@ -160,6 +212,39 @@ Approve to proceed to test planning?
 You: approved
 
 ... [continues through phases] ...
+
+Claude: [Shows final diff]
+
+Ready to commit with message:
+feat(ui): add dark mode toggle to header
+
+- Add ThemeContext for theme state management
+- Add ThemeToggle button component
+- Persist preference in localStorage
+- Default to OS prefers-color-scheme
+
+Approve to commit?
+
+You: approved
+
+Claude: [Commits changes]
+```
+
+## Creating Custom Commands
+
+See `COMMAND-PATTERNS.md` for detailed guidance on creating custom slash commands.
+
+Basic structure:
+
+```markdown
+---
+description: My custom workflow
+argument-hint: [what to pass]
+---
+
+# My Workflow
+
+Instructions for Claude...
 ```
 
 ## Tips
@@ -167,18 +252,24 @@ You: approved
 ### For Faster Workflows
 
 - Use `/plan` instead of `/feature` for small tasks
-- Combine approvals: "approved, skip test plan" if you trust the approach
 - Be specific in your initial request to reduce questions
+- Combine approvals when confident
 
 ### For Better Results
 
 - Answer clarifying questions thoroughly
 - Review FRD and Design documents carefully
-- Push back if the AI proposes unnecessary complexity
+- Push back if Claude proposes unnecessary complexity
 - Use "abort" to restart if going off track
 
-### Customization
+### ADRs
 
-- Edit agent files to match your team's style
-- Add domain-specific templates
-- Modify commands for your workflow
+Record significant architectural decisions in `memories/`:
+1. Copy from existing ADR
+2. Number sequentially
+3. Update `ADR-INDEX.md`
+
+## Reference
+
+- [Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code)
+- `COMMAND-PATTERNS.md` in this repo for command creation guide
