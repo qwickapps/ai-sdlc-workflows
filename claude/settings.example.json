@@ -1,0 +1,78 @@
+{
+  "permissions": {
+    "allow": [
+      "Edit",
+      "Write",
+      "MultiEdit",
+      "Read",
+      "WebFetch",
+      "WebSearch",
+
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(pnpm:*)",
+      "Bash(node:*)",
+      "Bash(tsx:*)",
+
+      "Bash(git:*)",
+      "Bash(gh:*)",
+
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(cat:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
+      "Bash(rm:*)",
+      "Bash(chmod:*)",
+      "Bash(tar:*)",
+      "Bash(test:*)",
+
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Bash(jq:*)",
+      "Bash(awk:*)",
+      "Bash(sed:*)",
+      "Bash(echo:*)",
+      "Bash(base64:*)",
+      "Bash(tee:*)",
+
+      "Bash(docker:*)",
+      "Bash(docker-compose:*)",
+
+      "Bash(psql:*)",
+      "Bash(sqlite3:*)",
+
+      "Bash(python3:*)",
+      "Bash(bash:*)",
+
+      "Bash(openssl:*)",
+      "Bash(ssh:*)",
+      "Bash(scp:*)",
+
+      "Bash(./deploy-*.sh:*)",
+      "Bash(./sync-*.sh:*)",
+      "Bash(./qa/*:*)",
+
+      "mcp__ide__getDiagnostics",
+      "mcp__MCP_DOCKER__browser_*"
+    ],
+    "deny": [
+      "Bash(sudo:*)",
+      "Bash(su:*)",
+      "Bash(rm -rf /*)",
+      "Bash(rm -rf /)",
+      "Bash(format:*)",
+      "Bash(fdisk:*)",
+      "Bash(mkfs:*)",
+      "Bash(dd if=/dev/zero:*)",
+      "Bash(> /dev/sda:*)",
+      "Bash(chmod 777 -R /*)",
+      "Bash(chown -R:*)"
+    ]
+  },
+  "env": {
+    "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "true"
+  }
+}
