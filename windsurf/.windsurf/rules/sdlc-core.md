@@ -34,6 +34,40 @@ After implementation, update:
 - CHANGELOG.md (new entry)
 - Tests (unit, integration, e2e as appropriate)
 
+---
+
+## Folder Structure
+
+Use the `.windsurf/` folder for workflow artifacts:
+
+```
+.windsurf/
+├── rules/          # Workflow rules (this file)
+├── templates/      # Document templates (FRD, Design, Test Plan, etc.)
+├── agents/         # Agent persona definitions
+├── memories/       # ADRs - Architecture Decision Records
+└── engineering/    # Working documents (gitignore this)
+    ├── frd/        # Feature Request Documents
+    ├── design/     # Design Proposals
+    ├── test-plans/ # Test Plans
+    ├── reviews/    # Code Review Reports
+    ├── spikes/     # Investigation Reports
+    ├── bugs/       # Bug Analysis
+    └── releases/   # Release Documents
+```
+
+### How to Use These Folders
+
+**templates/**: Use templates when creating workflow documents. Copy and fill in.
+
+**agents/**: Reference `@agents` to understand which persona to adopt for each phase.
+
+**memories/**: Record significant architectural decisions as ADRs. Update `ADR-INDEX.md`.
+
+**engineering/**: Create working documents during workflows. These guide implementation but are NOT committed to version control.
+
+---
+
 ## Anti-Patterns to Avoid
 
 - Jumping straight to code without planning

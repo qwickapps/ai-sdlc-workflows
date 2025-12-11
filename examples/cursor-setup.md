@@ -20,17 +20,22 @@ Your project should now have:
 ```
 your-project/
 ├── .cursor/
-│   └── rules/
-│       ├── sdlc-core.md        # Always applied
-│       ├── feature-workflow.md  # Manual activation
-│       ├── bug-workflow.md      # Manual activation
-│       ├── plan-workflow.md     # Manual activation
-│       ├── refactor-workflow.md # Manual activation
-│       └── agents.md            # Manual activation
+│   ├── rules/          # Workflow rules
+│   ├── templates/      # Document templates
+│   ├── agents/         # Agent persona definitions
+│   ├── memories/       # ADRs (architectural decisions)
+│   └── engineering/    # Working documents (gitignore this)
 └── ... your code ...
 ```
 
-### 2. Understand Rule Types
+### 2. Update .gitignore
+
+Add working documents to gitignore:
+```bash
+echo ".cursor/engineering/" >> /path/to/your-project/.gitignore
+```
+
+### 3. Understand Rule Types
 
 Rules have different activation modes based on their frontmatter:
 

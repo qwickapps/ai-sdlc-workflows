@@ -20,28 +20,18 @@ Your project should now have:
 ```
 your-project/
 ├── .windsurf/
-│   └── rules/
-│       ├── sdlc-core.md
-│       ├── feature-workflow.md
-│       ├── bug-workflow.md
-│       ├── plan-workflow.md
-│       ├── refactor-workflow.md
-│       └── agents.md
+│   ├── rules/          # Workflow rules
+│   ├── templates/      # Document templates
+│   ├── agents/         # Agent persona definitions
+│   ├── memories/       # ADRs (architectural decisions)
+│   └── engineering/    # Working documents (gitignore this)
 └── ... your code ...
 ```
 
-### 2. (Optional) Copy Templates
+### 2. Update .gitignore
 
-If you want document templates for FRDs, Design docs, etc:
+Add working documents to gitignore:
 ```bash
-cp -r windsurf/templates/ /path/to/your-project/.windsurf/templates/
-```
-
-### 3. Create Working Directory (Optional)
-
-For engineering documents during workflows:
-```bash
-mkdir -p /path/to/your-project/.windsurf/engineering/{frd,design,test-plans,reviews}
 echo ".windsurf/engineering/" >> /path/to/your-project/.gitignore
 ```
 

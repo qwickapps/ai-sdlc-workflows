@@ -98,14 +98,11 @@ Different phases activate different "agent personas" with specialized focus:
 ### Claude Code
 
 ```bash
-# Copy .claude folder to your project
-cp -r claude/ your-project/.claude/
-
-# Copy CLAUDE.md to project root
+# Copy .claude folder and CLAUDE.md to your project
+cp -r claude/.claude/ your-project/.claude/
 cp claude/CLAUDE.md your-project/CLAUDE.md
 
-# Create engineering folder (gitignore this)
-mkdir -p your-project/.claude/engineering/{frd,design,test-plans,reviews}
+# Add engineering folder to gitignore
 echo ".claude/engineering/" >> your-project/.gitignore
 ```
 
@@ -116,6 +113,9 @@ echo ".claude/engineering/" >> your-project/.gitignore
 ```bash
 # Copy .windsurf folder to your project
 cp -r windsurf/.windsurf/ your-project/.windsurf/
+
+# Add engineering folder to gitignore
+echo ".windsurf/engineering/" >> your-project/.gitignore
 ```
 
 **Usage:** `@feature-workflow`, `@bug-workflow`, `@plan-workflow`, or prefix with `feature:`, `bug:`, `plan:`
@@ -125,6 +125,9 @@ cp -r windsurf/.windsurf/ your-project/.windsurf/
 ```bash
 # Copy .cursor folder to your project
 cp -r cursor/.cursor/ your-project/.cursor/
+
+# Add engineering folder to gitignore
+echo ".cursor/engineering/" >> your-project/.gitignore
 ```
 
 **Usage:** `@feature-workflow`, `@bug-workflow`, `@plan-workflow`, `@refactor-workflow`
@@ -132,9 +135,13 @@ cp -r cursor/.cursor/ your-project/.cursor/
 ### Aider
 
 ```bash
-# Copy conventions file and config to your project
+# Copy .aider folder, conventions file and config to your project
+cp -r aider/.aider/ your-project/.aider/
 cp aider/CONVENTIONS.md your-project/CONVENTIONS.md
 cp aider/.aider.conf.yml your-project/.aider.conf.yml
+
+# Add engineering folder to gitignore
+echo ".aider/engineering/" >> your-project/.gitignore
 ```
 
 **Usage:** Conventions are automatically loaded. Use workflow keywords like `feature:`, `bug:`, `plan:` in prompts.
@@ -167,14 +174,16 @@ For improving code structure without changing behavior.
 
 ## Tool-Specific Details
 
+All tools share the same folder structure (rules, templates, agents, memories, engineering) but have tool-specific activation methods:
+
 ### Claude Code
 - Uses slash commands: `/feature`, `/bug`, `/plan`, `/refactor`, `/commit`, `/release`, `/spike`
-- Agents defined in `.claude/agents/`
-- Document templates in `.claude/templates/`
-- Working docs in `.claude/engineering/` (gitignored)
+- Commands defined in `.claude/commands/`
+- Includes `COMMAND-PATTERNS.md` guide for creating custom commands
+- [Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code)
 
 ### Windsurf
-- Uses `.windsurf/rules/` directory (recommended)
+- Uses `.windsurf/rules/` directory
 - Rules activated via `@mention` or automatically based on context
 - Character limit: 6000 per rule, 12000 total
 - [Official docs](https://docs.windsurf.com/windsurf/cascade/memories)
@@ -190,6 +199,91 @@ For improving code structure without changing behavior.
 - Configure in `.aider.conf.yml` for automatic loading
 - Mark as read-only for prompt caching benefits
 - [Official docs](https://aider.chat/docs/usage/conventions.html)
+
+---
+
+## Folder Structure
+
+Each tool uses a consistent folder structure:
+
+```
+.claude/ (or .cursor/, .windsurf/, .aider/)
+├── rules/          # Workflow rules and commands
+├── templates/      # Document templates
+├── agents/         # Agent persona definitions
+├── memories/       # Architecture Decision Records (ADRs)
+└── engineering/    # Working documents (NOT committed)
+```
+
+### Folder Rationale
+
+#### `rules/` (or `commands/`)
+**Purpose:** Workflow definitions that trigger structured processes.
+
+**Why:** AI assistants need explicit instructions to follow disciplined workflows. Without them, they jump straight to code.
+
+#### `templates/`
+**Purpose:** Standardized document formats for FRDs, Design docs, Test Plans, Reviews, etc.
+
+**Why:** Consistent documentation ensures nothing is missed. Templates guide the AI to capture the right information at each phase.
+
+**Contents:**
+- `FRD.md` - Feature Request Document
+- `DESIGN.md` - Design Proposal
+- `TEST-PLAN.md` - Test Strategy
+- `REVIEW.md` - Code Review Report
+- `BUG.md` - Bug Analysis
+- `SPIKE.md` - Investigation Report
+- `RELEASE.md` - Release Document
+
+#### `agents/`
+**Purpose:** Agent persona definitions that guide behavior during different phases.
+
+**Why:** Different phases require different mindsets. A Product Manager asks different questions than an Architect. Personas help the AI adopt the right focus for each phase.
+
+**Personas:**
+- Product Manager (requirements)
+- Architect (design)
+- Quality Engineer (testing)
+- Coder (implementation)
+- Reviewer (review)
+- Tech Writer (documentation)
+
+#### `memories/`
+**Purpose:** Architecture Decision Records (ADRs) that document significant decisions.
+
+**Why:** ADRs provide persistent project knowledge. When making new decisions, the AI can reference past decisions to maintain consistency. Unlike ephemeral chat history, ADRs are committed to version control.
+
+**Committed:** Yes - these are permanent project documentation.
+
+#### `engineering/`
+**Purpose:** Working documents created during workflows (FRDs, designs, test plans, reviews).
+
+**Why:** Workflows create artifacts that guide implementation. These documents capture decisions made during each phase but become stale immediately after implementation. The code is the source of truth, not the planning documents.
+
+**Committed:** No - add to `.gitignore`. These are working documents, not deliverables.
+
+**Subfolders:**
+```
+engineering/
+├── frd/           # Feature Request Documents
+├── design/        # Design Proposals
+├── test-plans/    # Test Plans
+├── reviews/       # Code Review Reports
+├── spikes/        # Investigation Reports
+├── bugs/          # Bug Analysis
+└── releases/      # Release Documents
+```
+
+### What Gets Committed vs. Gitignored
+
+| Folder | Committed? | Rationale |
+|--------|------------|-----------|
+| `rules/` | Yes | Shared workflow definitions |
+| `templates/` | Yes | Shared document standards |
+| `agents/` | Yes | Shared persona definitions |
+| `memories/` | Yes | Permanent architectural decisions |
+| `engineering/` | **No** | Working documents that go stale |
 
 ---
 

@@ -121,6 +121,37 @@ When restructuring code:
 
 ---
 
+## Folder Structure
+
+For projects using these workflows, create this structure:
+
+```
+project/
+├── .aider/                 # Aider workflow artifacts
+│   ├── templates/          # Document templates (FRD, Design, Test Plan, etc.)
+│   ├── memories/           # ADRs - Architecture Decision Records
+│   └── engineering/        # Working documents (gitignore this)
+│       ├── frd/            # Feature Request Documents
+│       ├── design/         # Design Proposals
+│       ├── test-plans/     # Test Plans
+│       ├── reviews/        # Code Review Reports
+│       ├── spikes/         # Investigation Reports
+│       ├── bugs/           # Bug Analysis
+│       └── releases/       # Release Documents
+├── CONVENTIONS.md          # This file
+└── .aider.conf.yml         # Aider config
+```
+
+### How to Use These Folders
+
+**templates/**: Use templates when creating workflow documents. Copy and fill in.
+
+**memories/**: Record significant architectural decisions as ADRs. Update `ADR-INDEX.md`. These ARE committed to version control.
+
+**engineering/**: Create working documents during workflows. These guide implementation but are NOT committed to version control. Add `.aider/engineering/` to `.gitignore`.
+
+---
+
 ## Anti-Patterns to Avoid
 
 - Jumping straight to code without understanding requirements

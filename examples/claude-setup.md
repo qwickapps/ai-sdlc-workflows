@@ -9,11 +9,12 @@ This guide walks through setting up AI SDLC Workflows with Claude Code.
 
 ## Setup Steps
 
-### 1. Copy the `.claude` Folder
+### 1. Copy the `.claude` Folder and CLAUDE.md
 
 ```bash
 # From the ai-sdlc-workflows repository
-cp -r claude/ your-project/.claude/
+cp -r claude/.claude/ your-project/.claude/
+cp claude/CLAUDE.md your-project/CLAUDE.md
 ```
 
 Your project should now have:
@@ -26,19 +27,11 @@ your-project/
 │   ├── memories/       # ADRs (architectural decisions)
 │   ├── engineering/    # Working documents (gitignore this)
 │   └── settings.example.json
-├── CLAUDE.md           # Copy this too
+├── CLAUDE.md           # Critical rules for Claude Code
 └── ... your code ...
 ```
 
-### 2. Copy CLAUDE.md to Project Root
-
-```bash
-cp claude/CLAUDE.md your-project/CLAUDE.md
-```
-
-This file contains the critical rules that Claude Code will follow.
-
-### 3. Update .gitignore
+### 2. Update .gitignore
 
 Add working documents to gitignore:
 
@@ -47,7 +40,7 @@ echo ".claude/engineering/" >> your-project/.gitignore
 echo ".claude/settings.local.json" >> your-project/.gitignore
 ```
 
-### 4. (Optional) Configure Settings
+### 3. (Optional) Configure Settings
 
 ```bash
 cp .claude/settings.example.json .claude/settings.json

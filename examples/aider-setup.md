@@ -9,24 +9,36 @@ This guide walks through setting up AI SDLC Workflows with Aider.
 
 ## Setup Steps
 
-### 1. Copy Conventions File
+### 1. Copy the `.aider` Folder and Config Files
 
 ```bash
 # From the ai-sdlc-workflows repository
+cp -r aider/.aider/ /path/to/your-project/.aider/
 cp aider/CONVENTIONS.md /path/to/your-project/CONVENTIONS.md
-```
-
-### 2. Copy Configuration (Recommended)
-
-```bash
 cp aider/.aider.conf.yml /path/to/your-project/.aider.conf.yml
 ```
 
-This automatically loads the conventions file on every aider session.
+Your project should now have:
+```
+your-project/
+├── .aider/
+│   ├── templates/      # Document templates
+│   ├── memories/       # ADRs (architectural decisions)
+│   └── engineering/    # Working documents (gitignore this)
+├── CONVENTIONS.md      # Main conventions file
+└── .aider.conf.yml     # Aider config (auto-loads conventions)
+```
+
+### 2. Update .gitignore
+
+Add working documents to gitignore:
+```bash
+echo ".aider/engineering/" >> /path/to/your-project/.gitignore
+```
 
 ### 3. Alternative: Manual Loading
 
-If you don't want auto-loading, load conventions manually:
+If you prefer manual loading instead of auto-config:
 
 ```bash
 # At startup
