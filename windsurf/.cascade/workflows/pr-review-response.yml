@@ -1,0 +1,229 @@
+workflow: pr-review-response
+description: Respond to pull request review comments
+trigger: PR review comments received
+
+prerequisites:
+  - PR exists with review comments
+  - Comments need to be addressed
+  - Access to the PR branch
+
+steps:
+  - step: 1
+    name: analyze-review-comments
+    agent: architect
+    actions:
+      - Read all review comments thoroughly
+      - Categorize comments (blocking, suggestions, questions)
+      - Identify required changes vs optional improvements
+      - Assess impact of requested changes
+      - Document understanding of each comment
+    
+    validation_gates:
+      - All comments read and understood
+      - Categories identified
+      - Impact assessed
+      - No ambiguous comments remain
+    
+    stop_if:
+      - Comments are unclear or contradictory
+      - Requested changes conflict with requirements
+      - Significant architectural changes requested
+      - Scope creep detected
+    
+    outputs:
+      - Comment analysis document
+      - Change plan
+      - Questions for reviewer (if any)
+    
+    next: checkout-pr-branch
+
+  - step: 2
+    name: checkout-pr-branch
+    agent: devops
+    actions:
+      - Identify PR branch name
+      - Checkout the PR branch
+      - Pull latest changes
+      - Verify on correct branch
+    
+    validation_gates:
+      - Branch checked out successfully
+      - Branch is up to date
+      - No uncommitted changes
+    
+    stop_if:
+      - Branch not found
+      - Merge conflicts exist
+    
+    outputs:
+      - Current branch confirmation
+    
+    next: implement-changes
+
+  - step: 3
+    name: implement-changes
+    agent: coder
+    actions:
+      - Address each review comment
+      - Make requested changes
+      - Refactor as suggested
+      - Fix identified issues
+      - Add tests if requested
+      - Update documentation if needed
+    
+    validation_gates:
+      - All blocking comments addressed
+      - Code compiles and runs
+      - Tests pass
+      - Changes follow existing patterns
+      - No new issues introduced
+    
+    stop_if:
+      - Requested change unclear
+      - Change would break functionality
+      - Conflicts with other requirements
+      - Uncertain about approach
+    
+    outputs:
+      - Modified files
+      - Updated tests
+      - Updated documentation
+    
+    next: self-review
+
+  - step: 4
+    name: self-review
+    agent: reviewer
+    actions:
+      - Verify all review comments addressed
+      - Check each comment is resolved
+      - Validate changes are appropriate
+      - Ensure no over-engineering
+      - Confirm tests still pass
+    
+    validation_gates:
+      - All comments addressed
+      - Changes are minimal and focused
+      - Tests pass
+      - No new issues
+    
+    stop_if:
+      - Comments not fully addressed
+      - Changes introduce new issues
+      - Over-engineered solution
+    
+    outputs:
+      - Self-review checklist
+      - Confirmation all comments addressed
+    
+    next: commit-changes
+
+  - step: 5
+    name: commit-changes
+    agent: devops
+    actions:
+      - Stage all changes
+      - Create commit with message referencing review
+      - Push to PR branch
+    
+    commit_message_format: |
+      fix(RS-XXXXX): Address PR review comments
+      
+      - Comment 1: [description of change]
+      - Comment 2: [description of change]
+      - Comment 3: [description of change]
+    
+    validation_gates:
+      - Commit message valid
+      - All changes committed
+      - Push successful
+    
+    stop_if:
+      - Commit message invalid
+      - Push fails
+    
+    outputs:
+      - Commit SHA
+      - Push confirmation
+    
+    next: respond-to-comments
+
+  - step: 6
+    name: respond-to-comments
+    agent: tech-writer
+    actions:
+      - Reply to each review comment on PR
+      - Mark resolved comments as resolved
+      - Explain changes made
+      - Reference commit SHA
+      - Ask for re-review if needed
+    
+    response_format: |
+      [RESOLVED] Fixed in commit [SHA]
+      - [Explanation of what was changed]
+      
+      OR
+      
+      [QUESTION] [Ask for clarification]
+      
+      OR
+      
+      [DISCUSSION] [Explain why alternative approach taken]
+    
+    validation_gates:
+      - All comments responded to
+      - Responses are professional
+      - Commit references included
+      - Clear explanations provided
+    
+    outputs:
+      - PR comment responses
+      - Re-review request (if needed)
+    
+    next: generate-summary
+
+  - step: 7
+    name: generate-summary
+    agent: tech-writer
+    actions:
+      - Create summary of changes made
+      - Document which comments addressed
+      - Note any discussions or questions
+      - Save to reports
+    
+    validation_gates:
+      - Summary complete
+      - All changes documented
+      - Saved correctly
+    
+    outputs:
+      - Review response summary
+      - Report path
+    
+    next: complete
+
+completion_criteria:
+  - All review comments addressed or discussed
+  - Changes committed and pushed
+  - Comments responded to on PR
+  - Summary generated
+
+special_cases:
+  disagree_with_comment:
+    - Discuss with reviewer professionally
+    - Explain reasoning
+    - Provide alternative if possible
+    - Seek consensus
+    - Document decision
+  
+  scope_creep:
+    - Identify out-of-scope requests
+    - Discuss with reviewer
+    - Suggest separate ticket
+    - Focus on original requirements
+  
+  conflicting_comments:
+    - Identify conflicts
+    - Ask reviewers to clarify
+    - Wait for consensus
+    - Do not proceed until resolved

@@ -85,7 +85,18 @@ Each workflow phase uses the appropriate agent persona:
 .claude/
 ├── commands/           # SDLC workflow commands
 ├── templates/          # Document templates
-├── agents/             # Agent persona definitions
+├── agents@ -> ../../shared/agents         # Agent persona definitions (symlink)
+├── validators@ -> ../../shared/validators # Validation scripts (symlink)
+├── engineering@ -> ../../shared/engineering  # Working documents (symlink)
+├── kb@ -> ../../shared/kb                 # Knowledge base (symlink)
+└── settings.json       # Permissions
+
+shared/ (Cross-tool resources)
+├── agents/             # Agent definitions (.md for Claude, .yml for Windsurf)
+├── validators/         # Bash validation scripts
+│   ├── commit-validator.sh    # Validates commit message format
+│   ├── branch-validator.sh    # Validates branch naming
+│   └── workflow-validator.sh  # Validates workflow steps
 ├── engineering/        # Working documents (NOT committed)
 │   ├── frd/            # Feature Request Documents
 │   ├── design/         # Design Proposals
@@ -93,11 +104,26 @@ Each workflow phase uses the appropriate agent persona:
 │   ├── reviews/        # Code Review Reports
 │   ├── spikes/         # Investigation Reports
 │   ├── bugs/           # Bug Analysis
-│   └── releases/       # Release Documents
-└── settings.json       # Permissions
+│   ├── releases/       # Release Documents
+│   ├── reports/        # Generated reports
+│   │   ├── analysis/
+│   │   ├── implementation/
+│   │   └── testing/
+│   └── presentations/  # Presentation materials
+└── kb/                 # Knowledge Base
+    ├── index.json      # Auto-maintained searchable index
+    ├── template.md     # KB entry template
+    ├── architecture/   # Architecture documentation
+    ├── components/     # Component documentation
+    └── decisions/      # Architecture Decision Records (ADRs)
+        └── ADR-INDEX.md
 ```
 
-**Engineering artifacts** (`.claude/engineering/`) are working documents that guide implementation. They are NOT committed - only the resulting code and deliverables are committed.
+**Shared Resources**: The `.claude/` folder uses symlinks to reference shared resources in `../shared/`. This allows multiple AI coding tools (Claude, Windsurf, etc.) to use the same agents, validators, knowledge base, and engineering artifacts.
+
+**Engineering artifacts** are working documents that guide implementation. They are NOT committed - only the resulting code and deliverables are committed.
+
+**Knowledge Base** (kb) replaces the old memories folder and uses a structured, searchable format with auto-indexing. Architecture Decision Records (ADRs) are stored in `kb/decisions/`.
 
 ---
 

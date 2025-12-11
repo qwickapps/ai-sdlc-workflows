@@ -27,7 +27,12 @@ If $ARGUMENTS is empty or unclear, ask:
 - Error message or unexpected behavior
 - Steps to reproduce (if known)
 - Expected vs actual behavior
-- GitHub issue number or URL (if applicable)"
+- Issue/ticket number (GitHub issue, JIRA ticket, etc.)"
+
+**Extract and store the issue/ticket number** from the response for:
+- Branch naming (bugfix/ISSUE-123)
+- Document attachment
+- Commit messages
 
 Wait for response before proceeding.
 
@@ -57,7 +62,12 @@ Wait for response before proceeding.
    - Save to: `.claude/engineering/bugs/BUG-<id>-<short-name>.md`
    - Include: reproduction steps, root cause, proposed fix
 
-5. **GATE: Present analysis to user and wait for approval**
+5. **Attach Bug Analysis to issue/ticket** (if issue number provided):
+   - **For GitHub issues**: Use `gh issue comment <issue-number> --body-file <bug-analysis-path>`
+   - **For JIRA tickets**: Use JIRA CLI or REST API to attach document
+   - **If attachment fails or not applicable**: Inform user to attach manually
+
+6. **GATE: Present analysis to user and wait for approval**
 
 Present in this format:
 
@@ -82,6 +92,30 @@ Present in this format:
 [Other options if applicable]
 
 Approve to proceed with fix, or provide feedback.
+```
+
+### WORKSPACE SETUP: Create Git Worktree
+
+After bug analysis approval, set up an isolated workspace using git worktree:
+
+1. **Determine branch name** from issue number:
+   - Format: `bugfix/<ISSUE-NUMBER>` (e.g., `bugfix/GH-123`, `bugfix/RS-456`)
+
+2. **Create git worktree with new branch**:
+   ```bash
+   git worktree add ../worktrees/bugfix/<ISSUE-NUMBER> -b bugfix/<ISSUE-NUMBER>
+   ```
+
+3. **Change to worktree directory**:
+   ```bash
+   cd ../worktrees/bugfix/<ISSUE-NUMBER>
+   ```
+
+4. **All subsequent work happens in this worktree**
+
+**Note**: If worktree creation fails (e.g., not in git repo), proceed with regular branch creation instead:
+```bash
+git checkout -b bugfix/<ISSUE-NUMBER>
 ```
 
 ### PHASE 2: Fix Implementation (Coder)

@@ -1,0 +1,157 @@
+workflow: hotfix
+description: Emergency fix for production issues
+trigger: Critical production bug
+
+prerequisites:
+  - Production issue identified
+  - Severity confirmed as critical
+  - Immediate fix required
+
+steps:
+  - step: 1
+    name: assess-urgency
+    agent: architect
+    actions:
+      - Read issue description
+      - Assess severity and impact
+      - Identify root cause quickly
+      - Plan minimal fix approach
+      - Document assessment in .cascade/engineering/analysis/
+      - Attach assessment to issue ticket (GitHub/JIRA via API/CLI)
+
+    validation_gates:
+      - Issue understood
+      - Root cause identified
+      - Fix approach clear
+      - Minimal change planned
+      - Assessment documented and attached
+
+    stop_if:
+      - Root cause unclear
+      - Fix requires extensive changes
+      - Risk too high
+
+    outputs:
+      - Impact assessment document
+      - Fix approach
+
+    next: create-hotfix-worktree
+
+  - step: 2
+    name: create-hotfix-worktree
+    agent: devops
+    actions:
+      - Determine hotfix ticket number (RS-XXXXX or GH-XXX)
+      - Create git worktree with new branch in ../worktrees/hotfix/<TICKET>
+      - Execute "git worktree add ../worktrees/hotfix/<TICKET> -b hotfix/<TICKET>"
+      - Change directory to worktree "cd ../worktrees/hotfix/<TICKET>"
+      - Verify worktree and branch created successfully
+
+    validation_gates:
+      - Branch name matches hotfix pattern (hotfix/RS-XXXXX or hotfix/GH-XXX)
+      - Worktree created successfully
+      - Branch created in worktree
+      - Working directory changed to worktree
+
+    stop_if:
+      - Branch already exists
+      - Worktree creation fails
+
+    outputs:
+      - Branch name
+      - Worktree path
+
+    next: implement-hotfix
+
+  - step: 3
+    name: implement-hotfix
+    agent: coder
+    actions:
+      - Implement minimal fix
+      - Add regression test
+      - Verify fix works
+      - No unnecessary changes
+    
+    validation_gates:
+      - Fix implemented
+      - Regression test added
+      - Issue resolved
+      - Change minimal
+    
+    stop_if:
+      - Fix doesn't work
+      - Side effects detected
+    
+    outputs:
+      - Fixed code
+      - Regression test
+    
+    next: expedited-review
+
+  - step: 4
+    name: expedited-review
+    agent: reviewer
+    actions:
+      - Quick code review
+      - Verify fix is minimal
+      - Check for side effects
+      - Validate test added
+    
+    validation_gates:
+      - Fix is correct
+      - No side effects
+      - Test adequate
+    
+    outputs:
+      - Review approval
+    
+    next: expedited-qa
+
+  - step: 5
+    name: expedited-qa
+    agent: qa
+    actions:
+      - Verify issue fixed
+      - Test critical paths
+      - Check for regressions
+    
+    validation_gates:
+      - Issue resolved
+      - No regressions
+    
+    outputs:
+      - Test results
+    
+    next: commit-and-pr
+
+  - step: 6
+    name: commit-and-pr
+    agent: devops
+    actions:
+      - Commit with message: "fix(RS-XXXXX)!: [critical fix description]"
+      - Push to remote
+      - Create urgent PR
+    
+    validation_gates:
+      - Commit message valid
+      - PR created with URGENT label
+    
+    outputs:
+      - Commit SHA
+      - PR URL
+    
+    next: document-hotfix
+
+  - step: 7
+    name: document-hotfix
+    agent: tech-writer
+    actions:
+      - Document hotfix details
+      - Record root cause
+      - Update KB
+    
+    outputs:
+      - Hotfix report
+      - KB update
+    
+    next: complete

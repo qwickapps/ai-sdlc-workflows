@@ -1,0 +1,118 @@
+workflow: code-review
+description: Perform thorough code review
+trigger: Code implementation complete
+
+prerequisites:
+  - Code changes committed
+  - Tests written
+  - Ready for review
+
+steps:
+  - step: 1
+    name: requirements-check
+    agent: reviewer
+    actions:
+      - Read original JIRA ticket
+      - Verify all acceptance criteria addressed
+      - Check edge cases handled
+      - Validate error scenarios covered
+    
+    validation_gates:
+      - All requirements met
+      - No missing functionality
+      - Edge cases addressed
+    
+    stop_if:
+      - Requirements not fully met
+      - Acceptance criteria missing
+    
+    outputs:
+      - Requirements checklist
+    
+    next: code-quality-check
+
+  - step: 2
+    name: code-quality-check
+    agent: reviewer
+    actions:
+      - Review code structure
+      - Check for code duplication
+      - Verify error handling
+      - Validate logging
+      - Check for hardcoded values
+      - Verify follows existing patterns
+    
+    validation_gates:
+      - Code quality acceptable
+      - No major issues
+      - Follows standards
+    
+    stop_if:
+      - Code quality issues
+      - Patterns not followed
+      - Security concerns
+    
+    outputs:
+      - Code quality report
+    
+    next: test-coverage-check
+
+  - step: 3
+    name: test-coverage-check
+    agent: reviewer
+    actions:
+      - Verify unit tests exist
+      - Check test coverage
+      - Validate edge case tests
+      - Verify error scenario tests
+    
+    validation_gates:
+      - Tests adequate
+      - Coverage sufficient
+      - All scenarios tested
+    
+    stop_if:
+      - Test coverage insufficient
+      - Critical scenarios untested
+    
+    outputs:
+      - Test coverage report
+    
+    next: documentation-check
+
+  - step: 4
+    name: documentation-check
+    agent: reviewer
+    actions:
+      - Check code comments
+      - Verify README updated
+      - Validate API docs updated
+      - Check KB updated if needed
+    
+    validation_gates:
+      - Documentation current
+      - Comments appropriate
+      - Changes documented
+    
+    outputs:
+      - Documentation checklist
+    
+    next: final-approval
+
+  - step: 5
+    name: final-approval
+    agent: reviewer
+    actions:
+      - Compile all findings
+      - Generate review report
+      - Provide approval or request changes
+    
+    validation_gates:
+      - All checks passed
+      - No blocking issues
+    
+    outputs:
+      - Review report
+      - Approval status
+    
+    next: complete

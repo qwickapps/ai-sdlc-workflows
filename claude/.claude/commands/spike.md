@@ -26,7 +26,12 @@ If $ARGUMENTS is empty, ask:
 
 - The question or problem to research
 - Technologies or approaches to evaluate
-- What decision this will inform"
+- What decision this will inform
+- Issue/ticket number (if this spike is tracked)"
+
+**Extract and store the issue/ticket number** (if provided) for:
+- Document attachment
+- Optional branch naming if code exploration is needed
 
 Wait for response before proceeding.
 
@@ -41,6 +46,22 @@ Wait for response before proceeding.
    - What is the time box?
 
 2. **GATE: Confirm scope with user before proceeding**
+
+### WORKSPACE SETUP (Optional): Create Git Worktree
+
+If the spike requires code exploration or POC implementation, set up an isolated workspace:
+
+1. **Ask user**: "This spike may require code changes. Should I create an isolated worktree for experimentation?"
+
+2. **If yes, create git worktree**:
+   ```bash
+   git worktree add ../worktrees/spike/<ISSUE-OR-NAME> -b spike/<ISSUE-OR-NAME>
+   cd ../worktrees/spike/<ISSUE-OR-NAME>
+   ```
+
+3. **If no or not applicable**: Continue without worktree (research only)
+
+**Note**: Spike branches are typically exploratory and may not be merged. Document findings in the spike report instead.
 
 ### PHASE 2: Research (Architect + Coder)
 
@@ -67,7 +88,12 @@ Wait for response before proceeding.
    - Recommendation with rationale
    - Next steps
 
-3. **GATE: Present findings to user**
+3. **Attach Spike Report to issue/ticket** (if issue number provided):
+   - **For GitHub issues**: Use `gh issue comment <issue-number> --body-file <spike-report-path>`
+   - **For JIRA tickets**: Use JIRA CLI or REST API to attach document
+   - **If attachment fails or not applicable**: Inform user to attach manually
+
+4. **GATE: Present findings to user**
 
 ### PHASE 4: Decision
 

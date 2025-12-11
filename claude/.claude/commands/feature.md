@@ -30,8 +30,13 @@ $ARGUMENTS (optional feature description, issue number, or context)
 If $ARGUMENTS is empty or unclear, ask:
 "What feature would you like to implement? Please provide:
 - A brief description of the feature
-- A GitHub issue number or URL
+- Issue/ticket number (GitHub issue, JIRA ticket, etc.)
 - Or context about the problem being solved"
+
+**Extract and store the issue/ticket number** from the response for:
+- Branch naming (feature/ISSUE-123)
+- Document attachment
+- Commit messages
 
 Wait for response before proceeding.
 </interactive_setup>
@@ -54,13 +59,48 @@ Adopt the **product-manager** agent persona. Your job is to:
    - Save to: `.claude/engineering/frd/FRD-<id>-<short-name>.md`
    - Use template from `.claude/templates/FRD.md`
 
-3. **GATE: Present FRD to user and wait for explicit approval**
+3. **Attach FRD to issue/ticket** (if issue number provided):
+   - **For GitHub issues**: Use `gh issue comment <issue-number> --body-file <frd-path>` or `gh issue edit <issue-number> --add-attachment <frd-path>` (if supported)
+   - **For JIRA tickets**: Use JIRA CLI `jira issue attach <ticket-key> <frd-path>` or REST API `curl -X POST -H "X-Atlassian-Token: no-check" -F "file=@<frd-path>" <jira-url>/rest/api/2/issue/<ticket-key>/attachments`
+   - **If attachment fails or not applicable**: Inform user to attach manually
+
+4. **GATE: Present FRD to user and wait for explicit approval**
 
 ```
 User must respond with "approved" or provide feedback for revision.
-Do NOT proceed to Phase 2 until FRD is approved.
+Do NOT proceed to workspace setup until FRD is approved.
 ```
 </phase_1_requirements>
+
+<workspace_setup>
+### WORKSPACE SETUP: Create Git Worktree
+
+After FRD approval, set up an isolated workspace using git worktree:
+
+1. **Determine branch name** from issue number:
+   - Format: `feature/<ISSUE-NUMBER>` (e.g., `feature/GH-123`, `feature/RS-456`)
+
+2. **Create git worktree with new branch**:
+   ```bash
+   git worktree add ../worktrees/feature/<ISSUE-NUMBER> -b feature/<ISSUE-NUMBER>
+   ```
+   - Creates worktree in `../worktrees/feature/<ISSUE-NUMBER>/`
+   - Creates and checks out new branch `feature/<ISSUE-NUMBER>`
+   - Allows parallel work on multiple features
+
+3. **Change to worktree directory**:
+   ```bash
+   cd ../worktrees/feature/<ISSUE-NUMBER>
+   ```
+
+4. **All subsequent work happens in this worktree**
+
+**Note**: If worktree creation fails (e.g., not in git repo), proceed with regular branch creation instead:
+```bash
+git checkout -b feature/<ISSUE-NUMBER>
+```
+
+</workspace_setup>
 
 <phase_2_design>
 ### PHASE 2: Design (Architect)
@@ -70,7 +110,7 @@ Adopt the **architect** agent persona. Your job is to:
 1. **Analyze existing codebase** - REUSE FIRST:
    - Search for similar patterns, components, utilities
    - Identify what can be reused vs. what needs to be created
-   - Check `.claude/memories/` for relevant ADRs
+   - Check `.claude/kb/decisions/` for relevant ADRs
 
 2. **Design the solution**:
    - Define architecture, components, and their interactions
@@ -82,7 +122,11 @@ Adopt the **architect** agent persona. Your job is to:
    - Save to: `.claude/engineering/design/DESIGN-<id>-<short-name>.md`
    - Use template from `.claude/templates/DESIGN.md`
 
-4. **GATE: Present design to user and wait for explicit approval**
+4. **Attach Design to issue/ticket** (if issue number provided):
+   - Use same attachment method as FRD (GitHub CLI or JIRA API/CLI)
+   - **If attachment fails or not applicable**: Inform user to attach manually
+
+5. **GATE: Present design to user and wait for explicit approval**
 
 ```
 User must respond with "approved" or provide feedback for revision.
@@ -105,7 +149,11 @@ Adopt the **quality-engineer** agent persona. Your job is to:
    - Save to: `.claude/engineering/test-plans/TEST-<id>-<short-name>.md`
    - Use template from `.claude/templates/TEST-PLAN.md`
 
-3. **GATE: Present test plan to user and wait for approval**
+3. **Attach Test Plan to issue/ticket** (if issue number provided):
+   - Use same attachment method as FRD (GitHub CLI or JIRA API/CLI)
+   - **If attachment fails or not applicable**: Inform user to attach manually
+
+4. **GATE: Present test plan to user and wait for approval**
 
 ```
 User must respond with "approved" or provide feedback.
@@ -158,7 +206,11 @@ Adopt the **reviewer** agent persona. Your job is to:
    - Save to: `.claude/engineering/reviews/REVIEW-<id>-<short-name>.md`
    - Use template from `.claude/templates/REVIEW.md`
 
-3. **GATE: Address any critical/blocking issues before proceeding**
+3. **Attach Review Report to issue/ticket** (if issue number provided):
+   - Use same attachment method as FRD (GitHub CLI or JIRA API/CLI)
+   - **If attachment fails or not applicable**: Inform user to attach manually
+
+4. **GATE: Address any critical/blocking issues before proceeding**
 </phase_5_review>
 
 <phase_6_documentation>

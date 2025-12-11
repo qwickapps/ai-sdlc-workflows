@@ -1,0 +1,39 @@
+version: 1.0.0
+system: cascade-workflow-engine
+
+# System-wide settings
+settings:
+  professional_mode: true
+  emoji_policy: none  # none, ui-only, all
+  tone: neutral-professional
+  validation_required: true
+  stop_on_uncertainty: true
+
+# Directory structure
+paths:
+  agents: .cascade/agents
+  workflows: .cascade/workflows
+  validators: .cascade/validators
+  kb: .cascade/kb
+  engineering: .cascade/engineering
+  reports: .cascade/engineering/reports
+
+# Knowledge base settings
+kb:
+  auto_index: true
+  format: concise-markdown
+  search_enabled: true
+
+# Validation settings
+validation:
+  commit_message_regex: '^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\((deps|[a-zA-Z]+\-[0-9]+)\))(!)?: ([\w ])+([\s\S]*)'
+  branch_naming:
+    bugfix: 'bugfix/RS-\d+'
+    feature: 'feature/RS-\d+'
+    hotfix: 'hotfix/RS-\d+'
+
+# Agent execution settings
+agents:
+  require_handoff_validation: true
+  log_transitions: true
+  enforce_gates: true

@@ -1,0 +1,162 @@
+workflow: bug-fix
+description: Investigate and fix a reported bug
+trigger: User reports bug or provides bug ticket number
+
+prerequisites:
+  - Bug description or ticket number
+  - Access to codebase
+  - Ability to reproduce (if possible)
+
+steps:
+  - step: 1
+    name: analyze-bug
+    agent: architect
+    actions:
+      - Read bug report/ticket completely
+      - Search KB for related components
+      - Identify affected systems
+      - Attempt to understand root cause
+      - Document findings in .cascade/engineering/reports/analysis/
+      - Attach analysis document to bug ticket (GitHub/JIRA via API/CLI)
+
+    validation_gates:
+      - Bug understood
+      - Affected components identified
+      - Root cause hypothesized
+      - Analysis documented
+      - Document attached to ticket (or user notified if failed)
+      - No assumptions made
+
+    stop_if:
+      - Cannot reproduce
+      - Root cause unclear
+      - Multiple possible causes
+
+    outputs:
+      - Analysis document (.cascade/engineering/reports/analysis/)
+      - Affected components list
+
+    next: create-bugfix-worktree
+
+  - step: 2
+    name: create-bugfix-worktree
+    agent: devops
+    actions:
+      - Determine bug ticket number (RS-XXXXX or GH-XXX)
+      - Create git worktree with new branch in ../worktrees/bugfix/<TICKET>
+      - Execute "git worktree add ../worktrees/bugfix/<TICKET> -b bugfix/<TICKET>"
+      - Change directory to worktree "cd ../worktrees/bugfix/<TICKET>"
+      - Verify worktree and branch created successfully
+
+    validation_gates:
+      - Branch name matches bugfix pattern (bugfix/RS-XXXXX or bugfix/GH-XXX)
+      - Worktree created successfully
+      - Branch created in worktree
+      - Working directory changed to worktree
+
+    stop_if:
+      - Branch already exists
+      - Worktree creation fails
+
+    outputs:
+      - Branch name
+      - Worktree path
+
+    next: implement-fix
+
+  - step: 3
+    name: implement-fix
+    agent: coder
+    actions:
+      - Read existing code
+      - Implement minimal fix for root cause
+      - Add regression test
+      - Verify fix resolves issue
+    
+    validation_gates:
+      - Fix implemented
+      - Regression test added
+      - Bug no longer reproducible
+      - No side effects introduced
+    
+    stop_if:
+      - Fix approach unclear
+      - Side effects detected
+      - Cannot verify fix
+    
+    outputs:
+      - Modified files
+      - Regression test
+    
+    next: review-fix
+
+  - step: 4
+    name: review-fix
+    agent: reviewer
+    actions:
+      - Verify fix addresses root cause
+      - Check for side effects
+      - Validate test coverage
+      - Ensure minimal change
+    
+    validation_gates:
+      - Root cause addressed
+      - No side effects
+      - Test coverage adequate
+      - Change is minimal
+    
+    outputs:
+      - Review approval
+    
+    next: qa-validation
+    next_if_issues: implement-fix
+
+  - step: 5
+    name: qa-validation
+    agent: qa
+    actions:
+      - Verify bug fixed
+      - Test regression scenarios
+      - Validate no new issues
+    
+    validation_gates:
+      - Bug confirmed fixed
+      - Regression tests pass
+      - No new issues
+    
+    outputs:
+      - Test results
+    
+    next: commit-and-push
+    next_if_issues: implement-fix
+
+  - step: 6
+    name: commit-and-push
+    agent: devops
+    actions:
+      - Commit with message: "fix(RS-XXXXX): [description]"
+      - Push to remote
+      - Create PR
+    
+    validation_gates:
+      - Commit message valid
+      - PR created
+    
+    outputs:
+      - Commit SHA
+      - PR URL
+    
+    next: generate-report
+
+  - step: 7
+    name: generate-report
+    agent: tech-writer
+    actions:
+      - Generate bug fix report
+      - Document root cause
+      - Update KB if needed
+    
+    outputs:
+      - Report path
+    
+    next: complete

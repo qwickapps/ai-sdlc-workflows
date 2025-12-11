@@ -86,10 +86,12 @@ Different phases activate different "agent personas" with specialized focus:
 
 | Tool | Status | Folder | Documentation |
 |------|--------|--------|---------------|
-| [Claude Code](https://claude.ai/code) | Ready | `/claude` | [Setup Guide](examples/claude-setup.md) |
-| [Windsurf](https://codeium.com/windsurf) | Ready | `/windsurf` | [Setup Guide](examples/windsurf-setup.md) |
+| [Claude Code](https://claude.ai/code) | ✅ Ready | `/claude` | [Setup Guide](examples/claude-setup.md) |
+| [Windsurf](https://codeium.com/windsurf) | ✅ Ready | `/windsurf` | [Setup Guide](examples/windsurf-setup.md) |
 | [Cursor](https://cursor.com) | Ready | `/cursor` | [Setup Guide](examples/cursor-setup.md) |
 | [Aider](https://aider.chat) | Ready | `/aider` | [Setup Guide](examples/aider-setup.md) |
+
+**New:** Claude and Windsurf workflows now use shared resources (`/shared`) for consistency across tools.
 
 ---
 
@@ -98,27 +100,29 @@ Different phases activate different "agent personas" with specialized focus:
 ### Claude Code
 
 ```bash
-# Copy .claude folder and CLAUDE.md to your project
+# Copy shared resources and Claude-specific files to your project
+cp -r shared/ your-project/shared/
 cp -r claude/.claude/ your-project/.claude/
 cp claude/CLAUDE.md your-project/CLAUDE.md
 
 # Add engineering folder to gitignore
-echo ".claude/engineering/" >> your-project/.gitignore
+echo "shared/engineering/" >> your-project/.gitignore
 ```
 
-**Usage:** `/feature`, `/bug`, `/plan`, `/refactor`, `/commit`
+**Usage:** `/feature`, `/bug`, `/plan`, `/refactor`, `/commit`, `/spike`, `/release`
 
 ### Windsurf
 
 ```bash
-# Copy .windsurf folder to your project
-cp -r windsurf/.windsurf/ your-project/.windsurf/
+# Copy shared resources and Windsurf-specific files to your project
+cp -r shared/ your-project/shared/
+cp -r windsurf/.cascade/ your-project/.cascade/
 
-# Add engineering folder to gitignore
-echo ".windsurf/engineering/" >> your-project/.gitignore
+# Add engineering folder to gitignore (if not already added)
+echo "shared/engineering/" >> your-project/.gitignore
 ```
 
-**Usage:** `@feature-workflow`, `@bug-workflow`, `@plan-workflow`, or prefix with `feature:`, `bug:`, `plan:`
+**Usage:** Workflows are automatically triggered based on JIRA tickets, bug reports, or feature requests.
 
 ### Cursor
 
@@ -204,16 +208,37 @@ All tools share the same folder structure (rules, templates, agents, memories, e
 
 ## Folder Structure
 
-Each tool uses a consistent folder structure:
+The repository uses a **shared resources** approach for consistency across tools:
 
 ```
-.claude/ (or .cursor/, .windsurf/, .aider/)
-├── rules/          # Workflow rules and commands
-├── templates/      # Document templates
-├── agents/         # Agent persona definitions
-├── memories/       # Architecture Decision Records (ADRs)
-└── engineering/    # Working documents (NOT committed)
+ai-sdlc-workflows/
+├── shared/                 # Shared resources (used by all tools)
+│   ├── agents/            # Agent persona definitions (.md and .yml)
+│   ├── validators/        # Validation scripts (bash)
+│   ├── engineering/       # Working documents (NOT committed)
+│   └── kb/                # Knowledge base with ADRs
+│
+├── claude/.claude/        # Claude Code specific
+│   ├── commands/          # Slash commands
+│   ├── templates/         # Document templates
+│   ├── agents@ -> ../../shared/agents      # Symlink
+│   ├── validators@ -> ../../shared/validators
+│   ├── engineering@ -> ../../shared/engineering
+│   └── kb@ -> ../../shared/kb
+│
+└── windsurf/.cascade/     # Windsurf specific
+    ├── workflows/         # YAML workflow definitions
+    ├── agents@ -> ../../shared/agents      # Symlink
+    ├── validators@ -> ../../shared/validators
+    ├── engineering@ -> ../../shared/engineering
+    └── kb@ -> ../../shared/kb
 ```
+
+**Why Shared Resources?**
+- **Consistency**: Same agents, validators, and standards across all tools
+- **Knowledge Preservation**: Single knowledge base shared by all workflows
+- **Maintainability**: Update once, applies everywhere
+- **Collaboration**: Different tools can work on the same codebase with shared context
 
 ### Folder Rationale
 
@@ -249,15 +274,38 @@ Each tool uses a consistent folder structure:
 - Reviewer (review)
 - Tech Writer (documentation)
 
-#### `memories/`
-**Purpose:** Architecture Decision Records (ADRs) that document significant decisions.
+#### `validators/` (in shared/)
+**Purpose:** Executable bash scripts that validate standards (commit messages, branch names, workflow steps).
 
-**Why:** ADRs provide persistent project knowledge. When making new decisions, the AI can reference past decisions to maintain consistency. Unlike ephemeral chat history, ADRs are committed to version control.
+**Why:** Automated validation ensures consistency and prevents errors. Scripts can be run locally or in CI/CD pipelines.
 
-**Committed:** Yes - these are permanent project documentation.
+**Committed:** Yes - shared validation standards.
 
-#### `engineering/`
-**Purpose:** Working documents created during workflows (FRDs, designs, test plans, reviews).
+**Scripts:**
+- `commit-validator.sh` - Validates commit message format
+- `branch-validator.sh` - Validates branch naming patterns
+- `workflow-validator.sh` - Validates workflow steps
+
+#### `kb/` (Knowledge Base - in shared/)
+**Purpose:** Structured knowledge base with Architecture Decision Records (ADRs), component docs, and architectural documentation.
+
+**Why:** KB provides persistent project knowledge with searchable indexing. ADRs maintain decision history for consistency. Unlike ephemeral chat history, KB is committed to version control and auto-indexed.
+
+**Committed:** Yes - permanent project documentation.
+
+**Structure:**
+```
+kb/
+├── index.json         # Auto-maintained searchable index
+├── template.md        # Template for new KB entries
+├── architecture/      # Architecture documentation
+├── components/        # Component documentation
+└── decisions/         # Architecture Decision Records (ADRs)
+    └── ADR-INDEX.md   # Central ADR registry
+```
+
+#### `engineering/` (in shared/)
+**Purpose:** Working documents created during workflows (FRDs, designs, test plans, reviews, reports, presentations).
 
 **Why:** Workflows create artifacts that guide implementation. These documents capture decisions made during each phase but become stale immediately after implementation. The code is the source of truth, not the planning documents.
 
@@ -266,24 +314,30 @@ Each tool uses a consistent folder structure:
 **Subfolders:**
 ```
 engineering/
-├── frd/           # Feature Request Documents
-├── design/        # Design Proposals
-├── test-plans/    # Test Plans
-├── reviews/       # Code Review Reports
-├── spikes/        # Investigation Reports
-├── bugs/          # Bug Analysis
-└── releases/      # Release Documents
+├── frd/               # Feature Request Documents
+├── design/            # Design Proposals
+├── test-plans/        # Test Plans
+├── reviews/           # Code Review Reports
+├── spikes/            # Investigation Reports
+├── bugs/              # Bug Analysis
+├── releases/          # Release Documents
+├── reports/           # Generated reports
+│   ├── analysis/
+│   ├── implementation/
+│   └── testing/
+└── presentations/     # Presentation materials
 ```
 
 ### What Gets Committed vs. Gitignored
 
 | Folder | Committed? | Rationale |
 |--------|------------|-----------|
-| `rules/` | Yes | Shared workflow definitions |
+| `commands/` or `workflows/` | Yes | Tool-specific workflow definitions |
 | `templates/` | Yes | Shared document standards |
-| `agents/` | Yes | Shared persona definitions |
-| `memories/` | Yes | Permanent architectural decisions |
-| `engineering/` | **No** | Working documents that go stale |
+| `shared/agents/` | Yes | Shared persona definitions (.md and .yml) |
+| `shared/validators/` | Yes | Validation scripts |
+| `shared/kb/` | Yes | Knowledge base with ADRs |
+| `shared/engineering/` | **No** | Working documents that go stale |
 
 ---
 

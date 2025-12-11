@@ -1,0 +1,168 @@
+workflow: feature-development
+description: Develop a new feature from design to deployment
+trigger: Feature request or story ticket
+
+prerequisites:
+  - Feature requirements defined
+  - Design approved (if applicable)
+  - Technical approach agreed
+
+steps:
+  - step: 1
+    name: design-review
+    agent: architect
+    actions:
+      - Review feature requirements
+      - Design technical approach
+      - Identify affected components
+      - Plan implementation phases
+      - Document architectural decisions in .cascade/engineering/design/
+      - Attach design document to feature ticket (GitHub/JIRA via API/CLI)
+
+    validation_gates:
+      - Design complete
+      - Approach validated
+      - Components identified
+      - Design documented and attached
+      - User approves design
+
+    stop_if:
+      - Design unclear
+      - Multiple approaches need discussion
+      - Significant architectural impact
+
+    outputs:
+      - Design document
+      - Implementation plan
+      - KB entry for architectural decisions
+
+    next: create-feature-worktree
+
+  - step: 2
+    name: create-feature-worktree
+    agent: devops
+    actions:
+      - Determine feature ticket number (RS-XXXXX or GH-XXX)
+      - Create git worktree with new branch in ../worktrees/feature/<TICKET>
+      - Execute "git worktree add ../worktrees/feature/<TICKET> -b feature/<TICKET>"
+      - Change directory to worktree "cd ../worktrees/feature/<TICKET>"
+      - Verify worktree and branch created successfully
+
+    validation_gates:
+      - Branch name matches feature pattern (feature/RS-XXXXX or feature/GH-XXX)
+      - Worktree created successfully
+      - Branch created in worktree
+      - Working directory changed to worktree
+
+    stop_if:
+      - Branch already exists
+      - Worktree creation fails
+
+    outputs:
+      - Branch name
+      - Worktree path
+
+    next: implement-feature
+
+  - step: 3
+    name: implement-feature
+    agent: coder
+    actions:
+      - Implement feature in phases
+      - Add comprehensive tests
+      - Add documentation
+      - Ensure production-ready quality
+    
+    validation_gates:
+      - Feature complete
+      - Tests comprehensive
+      - Code quality high
+      - Documentation added
+    
+    stop_if:
+      - Implementation unclear
+      - Breaking changes needed
+      - Dependencies require discussion
+    
+    outputs:
+      - Feature code
+      - Tests
+      - Documentation
+    
+    next: review-feature
+
+  - step: 4
+    name: review-feature
+    agent: reviewer
+    actions:
+      - Verify feature meets requirements
+      - Check code quality
+      - Validate test coverage
+      - Review documentation
+    
+    validation_gates:
+      - Requirements met
+      - Quality acceptable
+      - Tests adequate
+      - Documentation complete
+    
+    outputs:
+      - Review report
+    
+    next: qa-feature
+    next_if_issues: implement-feature
+
+  - step: 5
+    name: qa-feature
+    agent: qa
+    actions:
+      - Create comprehensive test plan
+      - Test all scenarios
+      - Verify integration
+      - Document results
+    
+    validation_gates:
+      - All tests pass
+      - Integration verified
+      - No critical issues
+    
+    outputs:
+      - Test plan
+      - Test results
+    
+    next: commit-and-pr
+    next_if_issues: implement-feature
+
+  - step: 6
+    name: commit-and-pr
+    agent: devops
+    actions:
+      - Commit with proper message
+      - Push to remote
+      - Create PR with detailed description
+    
+    validation_gates:
+      - Commit message valid
+      - PR created
+      - Description complete
+    
+    outputs:
+      - Commit SHA
+      - PR URL
+    
+    next: generate-documentation
+
+  - step: 7
+    name: generate-documentation
+    agent: tech-writer
+    actions:
+      - Generate feature documentation
+      - Update KB
+      - Create completion report
+    
+    outputs:
+      - Feature documentation
+      - KB updates
+      - Completion report
+    
+    next: complete

@@ -28,7 +28,13 @@ If $ARGUMENTS is empty, ask:
 
 - The code, component, or pattern to restructure
 - Why refactoring is needed
-- The desired end state"
+- The desired end state
+- Issue/ticket number (if this refactoring is tracked)"
+
+**Extract and store the issue/ticket number** (if provided) for:
+- Branch naming (refactor/ISSUE-123)
+- Document attachment
+- Commit messages
 
 Wait for response before proceeding.
 
@@ -50,11 +56,36 @@ Wait for response before proceeding.
    - Save to: `.claude/engineering/refactors/REFACTOR-<id>-<short-name>.md`
    - Include: current state, proposed state, migration steps, risks
 
-4. **GATE: Present proposal to user and wait for approval**
+4. **Attach Refactoring Proposal to issue/ticket** (if issue number provided):
+   - **For GitHub issues**: Use `gh issue comment <issue-number> --body-file <refactor-proposal-path>`
+   - **For JIRA tickets**: Use JIRA CLI or REST API to attach document
+   - **If attachment fails or not applicable**: Inform user to attach manually
+
+5. **GATE: Present proposal to user and wait for approval**
 
 ```text
 User must approve the refactoring approach before proceeding.
 Breaking changes require explicit acknowledgment.
+```
+
+### WORKSPACE SETUP: Create Git Worktree
+
+After refactoring proposal approval, set up an isolated workspace:
+
+1. **Determine branch name** from issue number or refactoring name:
+   - Format: `refactor/<ISSUE-NUMBER>` or `refactor/<short-name>`
+
+2. **Create git worktree with new branch**:
+   ```bash
+   git worktree add ../worktrees/refactor/<ISSUE-OR-NAME> -b refactor/<ISSUE-OR-NAME>
+   cd ../worktrees/refactor/<ISSUE-OR-NAME>
+   ```
+
+3. **All subsequent work happens in this worktree**
+
+**Note**: If worktree creation fails, proceed with regular branch creation:
+```bash
+git checkout -b refactor/<ISSUE-OR-NAME>
 ```
 
 ### PHASE 2: Phased Implementation (Coder)
