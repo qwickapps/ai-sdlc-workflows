@@ -95,6 +95,55 @@ Different phases activate different "agent personas" with specialized focus:
 
 ---
 
+## Quality Rules & Templates
+
+The repository includes comprehensive quality rules and document templates that ensure thorough, accurate work across all workflows.
+
+### Quality Rules (shared/rules/)
+
+These rules are automatically synced to all CLI directories and guide AI assistants to produce professional-quality work:
+
+- **FACT-VERIFICATION.md** - Standards for verifying all factual claims with evidence
+- **INVESTIGATION-METHODS.md** - Checklist for exhausting all investigation methods before concluding "unknown"
+- **ITERATION-GATES.md** - Quality gates for iterative improvement (don't proceed with incomplete work)
+- **SATISFACTORY-CRITERIA.md** - Criteria for determining when work meets quality standards
+- **WRITING-STYLE.md** - Professional documentation writing standards (neutral tone, evidence-based)
+
+### Document Templates (shared/templates/)
+
+Structured templates for all SDLC artifacts:
+
+**Core Templates:**
+- BUG.md - Bug investigation and resolution
+- DESIGN.md - Technical design proposals
+- FRD.md - Feature Request Documents
+- REVIEW.md - Code review reports
+- TEST-PLAN.md - Test strategy and cases
+
+**Enhanced Templates (New):**
+- **ESTIMATION.md** - Effort estimation with three-point estimates and confidence levels
+- **FACT-CHECK.md** - Fact verification reports with thoroughness assessment
+- **SPIKE.md** - Enhanced spike investigation template with fact-checking integration
+- **STYLE-GUIDE.md** - Professional writing guidelines for documentation
+
+**Other Templates:**
+- RELEASE.md - Release documentation
+- (Additional templates in `/shared/templates/`)
+
+### Sync Script
+
+Repository maintainers can update all CLI directories with a single command:
+
+```bash
+./shared/sync-workflows.sh
+```
+
+This syncs rules and templates from `shared/` to all CLI directories (Claude, Cursor, Windsurf, Aider), ensuring consistency across all tools.
+
+**End users:** Simply copy the desired CLI directory - rules and templates are already synced and ready to use.
+
+---
+
 ## Quick Start
 
 ### Claude Code
