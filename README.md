@@ -103,6 +103,8 @@ The repository includes comprehensive quality rules and document templates that 
 
 These rules are automatically synced to all CLI directories and guide AI assistants to produce professional-quality work:
 
+> **Note:** Cursor requires `.mdc` extension for rules (not `.md`). The sync script handles this automatically.
+
 - **FACT-VERIFICATION.md** - Standards for verifying all factual claims with evidence
 - **INVESTIGATION-METHODS.md** - Checklist for exhausting all investigation methods before concluding "unknown"
 - **ITERATION-GATES.md** - Quality gates for iterative improvement (don't proceed with incomplete work)
