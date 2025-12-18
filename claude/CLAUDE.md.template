@@ -1,0 +1,209 @@
+# Project Development Guidelines
+
+<!--
+  This file configures AI assistant behavior for your project.
+  Customize the sections below for your specific needs.
+
+  The SDLC Workflows section is managed by ai-sdlc-workflows.
+  To update it, run: ~/.ai-sdlc-workflows/update.sh
+-->
+
+## Project Overview
+
+<!-- Describe your project in 2-3 sentences -->
+
+**Project Name:** {PROJECT_NAME}
+
+**Description:** {BRIEF_DESCRIPTION}
+
+**Tech Stack:** {LIST_TECHNOLOGIES}
+
+---
+
+## Project-Specific Rules
+
+<!-- Add rules specific to your project/team -->
+
+### Code Style
+<!-- Examples:
+- Use TypeScript strict mode
+- Prefer functional components over class components
+- Use named exports, not default exports
+-->
+
+### Architecture
+<!-- Examples:
+- Follow hexagonal architecture
+- All API calls go through the api/ layer
+- State management uses Redux Toolkit
+-->
+
+### Testing
+<!-- Examples:
+- Minimum 80% code coverage
+- Use React Testing Library, not Enzyme
+- E2E tests for all user flows
+-->
+
+### Documentation
+<!-- Examples:
+- All public APIs must have JSDoc
+- Update CHANGELOG.md for user-facing changes
+- Architecture decisions go in docs/adr/
+-->
+
+---
+
+## CRITICAL RULES - ALWAYS FOLLOW
+
+### 1. NEVER Auto-Commit
+```
+STOP. Did the user explicitly say "approved" or "commit"?
+If NO → Do NOT commit. Show diff and wait for approval.
+If YES → Proceed with commit.
+```
+
+### 2. NEVER Add Legacy Support
+```
+NO backwards compatibility unless explicitly requested
+NO defensive fallbacks "just in case"
+NO workarounds - fix the actual issue
+Breaking changes are OK - ask if unsure
+```
+
+### 3. ALWAYS Plan Before Acting
+```
+For ANY non-trivial task:
+1. Analyze the request
+2. Check existing solutions (REUSE FIRST)
+3. Present options with tradeoffs
+4. Wait for user approval
+5. Then implement
+
+Use /plan for quick planning or /feature for full SDLC
+```
+
+### 4. ALWAYS Think Critically
+```
+DO NOT just do what user asks without thinking
+DO analyze requests like an architect/PM/UX designer
+DO identify potential issues
+DO discuss options
+DO push back when appropriate
+```
+
+### 5. ALWAYS Update Deliverables
+```
+After implementation, update:
+- README.md (if usage changed)
+- CHANGELOG.md (new entry)
+- Tests (unit, integration, e2e as appropriate)
+```
+
+---
+
+## SDLC Workflows
+
+Use slash commands to enforce proper workflows:
+
+| Command | When to Use |
+|---------|-------------|
+| `/feature` | New feature development (full SDLC) |
+| `/bug` | Bug investigation and fix |
+| `/refactor` | Code restructuring |
+| `/spike` | Technical research/investigation |
+| `/release` | Version release management |
+| `/code-review` | Code review before commit |
+| `/commit` | Controlled commit with approval |
+| `/plan` | Quick planning for smaller tasks |
+
+### Workflow Agents
+
+Each workflow phase uses the appropriate agent persona:
+
+| Phase | Agent | Focus |
+|-------|-------|-------|
+| Requirements | product-manager | Gather needs, define scope |
+| Design | architect | Technical design, REUSE FIRST |
+| Test Strategy | quality-engineer | Test planning, edge cases |
+| Implementation | coder | Clean code, no legacy support |
+| Review | reviewer | Quality, security, patterns |
+| Documentation | tech-writer | README, CHANGELOG, docs |
+| Coordination | engineering-manager | Multi-team, releases |
+
+---
+
+## Folder Structure
+
+```
+.claude/
+├── commands/           # Slash commands (symlinks to framework + local)
+├── templates/          # Document templates (symlinks to framework + local)
+├── rules/              # Quality rules (symlinks to framework + local)
+├── agents/             # Agent definitions (symlinks to framework)
+├── validators/         # Validation scripts (symlinks to framework)
+├── engineering/        # Working documents (NOT committed - gitignored)
+│   ├── frd/           # Feature Request Documents
+│   ├── design/        # Design Proposals
+│   ├── test-plans/    # Test Plans
+│   ├── reviews/       # Code Review Reports
+│   ├── spikes/        # Investigation Reports
+│   └── bugs/          # Bug Analysis
+└── settings.local.json # Personal settings (NOT committed)
+```
+
+---
+
+## Customization
+
+### Adding Custom Commands
+
+Create a new file in `.claude/commands/` (not a symlink):
+
+```bash
+# Create local command
+cat > .claude/commands/my-command.md << 'EOF'
+---
+description: My custom command
+---
+# My Command
+
+## Steps
+1. Do something
+2. Do something else
+EOF
+```
+
+### Overriding Framework Commands
+
+1. Remove the symlink: `rm .claude/commands/bug.md`
+2. Create your own version: `touch .claude/commands/bug.md`
+3. Edit as needed
+
+### Adding Project-Specific Rules
+
+Create files in `.claude/rules/` (not symlinks):
+
+```bash
+cat > .claude/rules/PROJECT-CONVENTIONS.md << 'EOF'
+# Project Conventions
+
+## Naming
+- Use PascalCase for components
+- Use camelCase for functions
+...
+EOF
+```
+
+---
+
+## Updates
+
+This project uses [ai-sdlc-workflows](https://github.com/qwickapps/ai-sdlc-workflows).
+
+To update the framework:
+```bash
+~/.ai-sdlc-workflows/update.sh
+```
+
+All symlinked files are automatically updated. Local customizations are preserved.

@@ -146,18 +146,77 @@ This syncs rules and templates from `shared/` to all CLI directories (Claude, Cu
 
 ---
 
-## Quick Start
+## Installation
+
+### Step 1: Install Globally (One-Time)
+
+**macOS / Linux:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/qwickapps/ai-sdlc-workflows/main/install.sh | bash
+```
+
+**Windows (PowerShell):**
+```powershell
+Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/qwickapps/ai-sdlc-workflows/main/install.ps1' -OutFile install.ps1
+.\install.ps1
+```
+
+This installs to `~/.ai-sdlc-workflows/` (or `%USERPROFILE%\.ai-sdlc-workflows\` on Windows).
+
+### Step 2: Set Up Your Project
+
+Navigate to your project directory and run setup for your preferred CLI(s):
+
+**macOS / Linux:**
+```bash
+cd /path/to/your/project
+
+~/.ai-sdlc-workflows/setup.sh --claude      # Claude Code
+~/.ai-sdlc-workflows/setup.sh --cursor      # Cursor
+~/.ai-sdlc-workflows/setup.sh --windsurf    # Windsurf
+~/.ai-sdlc-workflows/setup.sh --aider       # Aider
+~/.ai-sdlc-workflows/setup.sh --all         # All CLIs
+```
+
+**Windows (PowerShell):**
+```powershell
+cd C:\path\to\your\project
+
+~\.ai-sdlc-workflows\setup.ps1 -Claude      # Claude Code
+~\.ai-sdlc-workflows\setup.ps1 -Cursor      # Cursor
+~\.ai-sdlc-workflows\setup.ps1 -Windsurf    # Windsurf
+~\.ai-sdlc-workflows\setup.ps1 -Aider       # Aider
+~\.ai-sdlc-workflows\setup.ps1 -All         # All CLIs
+```
+
+### Step 3: Customize
+
+1. Edit `CLAUDE.md` (or equivalent) with your project-specific rules
+2. Add custom commands to `.claude/commands/` (they coexist with framework commands)
+3. Start using workflows: `/feature`, `/bug`, `/plan`, etc.
+
+### Updating
+
+To get the latest improvements:
+
+```bash
+~/.ai-sdlc-workflows/update.sh
+```
+
+All projects using symlinks are automatically updated. Your customizations are preserved.
+
+---
+
+## Quick Start (Legacy - Copy Method)
+
+If you prefer to copy files instead of using the installer:
 
 ### Claude Code
 
 ```bash
-# Copy shared resources and Claude-specific files to your project
-cp -r shared/ your-project/shared/
 cp -r claude/.claude/ your-project/.claude/
 cp claude/CLAUDE.md your-project/CLAUDE.md
-
-# Add engineering folder to gitignore
-echo "shared/engineering/" >> your-project/.gitignore
+echo ".claude/engineering/" >> your-project/.gitignore
 ```
 
 **Usage:** `/feature`, `/bug`, `/plan`, `/refactor`, `/commit`, `/spike`, `/release`
@@ -165,23 +224,16 @@ echo "shared/engineering/" >> your-project/.gitignore
 ### Windsurf
 
 ```bash
-# Copy shared resources and Windsurf-specific files to your project
-cp -r shared/ your-project/shared/
 cp -r windsurf/.cascade/ your-project/.cascade/
-
-# Add engineering folder to gitignore (if not already added)
-echo "shared/engineering/" >> your-project/.gitignore
+echo ".cascade/engineering/" >> your-project/.gitignore
 ```
 
-**Usage:** Workflows are automatically triggered based on JIRA tickets, bug reports, or feature requests.
+**Usage:** Workflows are automatically triggered based on context.
 
 ### Cursor
 
 ```bash
-# Copy .cursor folder to your project
 cp -r cursor/.cursor/ your-project/.cursor/
-
-# Add engineering folder to gitignore
 echo ".cursor/engineering/" >> your-project/.gitignore
 ```
 
@@ -190,12 +242,9 @@ echo ".cursor/engineering/" >> your-project/.gitignore
 ### Aider
 
 ```bash
-# Copy .aider folder, conventions file and config to your project
 cp -r aider/.aider/ your-project/.aider/
 cp aider/CONVENTIONS.md your-project/CONVENTIONS.md
 cp aider/.aider.conf.yml your-project/.aider.conf.yml
-
-# Add engineering folder to gitignore
 echo ".aider/engineering/" >> your-project/.gitignore
 ```
 
