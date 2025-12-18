@@ -1,0 +1,22 @@
+# Engineering artifacts - working documents that should not be committed
+# These are created during SDLC workflows and become stale after implementation
+shared/engineering/
+.claude/engineering/
+.cursor/engineering/
+.cascade/engineering/
+.windsurf/engineering/
+.aider/engineering/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Local settings (if any)
+*.local.*

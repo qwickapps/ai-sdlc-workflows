@@ -14,6 +14,27 @@ By consolidating common resources, we ensure:
 
 ```
 shared/
+├── rules/                 # Quality guidelines (synced to all CLIs)
+│   ├── FACT-VERIFICATION.md      # Standards for verifying claims
+│   ├── INVESTIGATION-METHODS.md  # Exhaustive investigation checklist
+│   ├── ITERATION-GATES.md        # Quality gates for iterations
+│   ├── SATISFACTORY-CRITERIA.md  # Criteria for satisfactory work
+│   └── WRITING-STYLE.md          # Professional writing standards
+│
+├── templates/             # Document templates (synced to all CLIs)
+│   ├── BUG.md            # Bug investigation template
+│   ├── DESIGN.md         # Technical design template
+│   ├── ESTIMATION.md     # Effort estimation template
+│   ├── FACT-CHECK.md     # Fact verification report
+│   ├── FRD.md            # Feature request template
+│   ├── RELEASE.md        # Release documentation template
+│   ├── REVIEW.md         # Code review report template
+│   ├── SPIKE.md          # Spike investigation template
+│   ├── STYLE-GUIDE.md    # Writing style guide
+│   └── TEST-PLAN.md      # Test plan template
+│
+├── sync-workflows.sh      # Script to sync rules/templates to all CLIs
+│
 ├── agents/                 # Agent definitions
 │   ├── *.md               # For Claude Code (markdown format)
 │   ├── *.yml              # For Windsurf (YAML format)
@@ -78,6 +99,55 @@ windsurf/.cascade/
 ```
 
 ## Usage Guidelines
+
+### Rules
+
+Quality guidelines that ensure thorough, accurate work:
+- Stored in `shared/rules/`
+- Synced to all CLIs via `sync-workflows.sh`
+- Markdown format (Cursor receives .mdc copies)
+- Referenced by workflows for quality checks
+- Guide AI assistants to produce professional-quality output
+
+**Key Rules:**
+- **FACT-VERIFICATION**: Every claim must have evidence (file:line or URL)
+- **INVESTIGATION-METHODS**: Exhaust all methods before concluding "unknown"
+- **ITERATION-GATES**: Don't proceed with incomplete or shallow work
+- **SATISFACTORY-CRITERIA**: Define when work meets quality standards
+- **WRITING-STYLE**: Professional, neutral, evidence-based writing
+
+### Templates
+
+Document templates for SDLC artifacts:
+- Stored in `shared/templates/`
+- Synced to all CLIs via `sync-workflows.sh`
+- Markdown format, compatible with all CLIs
+- Provide consistent structure for all documentation
+- Include prompts and examples for completeness
+
+**Core Templates:** BUG, DESIGN, FRD, REVIEW, TEST-PLAN, RELEASE
+**Enhanced Templates:** ESTIMATION (3-point estimates), FACT-CHECK (thoroughness assessment), SPIKE (enhanced investigation), STYLE-GUIDE (writing standards)
+
+### Sync Script
+
+The `sync-workflows.sh` script maintains consistency across all CLI directories:
+
+**Usage:**
+```bash
+./shared/sync-workflows.sh
+```
+
+**What it does:**
+- Copies rules from `shared/rules/` to all CLI directories
+- Copies templates from `shared/templates/` to all CLI directories
+- Handles Cursor's .mdc extension preference
+- Creates missing directories automatically
+- Provides colored output showing progress
+
+**When to run:**
+- After updating any file in `shared/rules/` or `shared/templates/`
+- Before committing changes to ensure all CLIs are in sync
+- When onboarding a new CLI to the repository
 
 ### Agents
 - Each agent has a specific role and responsibility

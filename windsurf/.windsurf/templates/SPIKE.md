@@ -37,9 +37,9 @@
 - {Con 1}
 - {Con 2}
 
-**Effort Estimate**: {Low/Medium/High}
-
 **Risk Level**: {Low/Medium/High}
+
+**NOTE**: Effort estimates should be in a separate ESTIMATION.md document, not embedded in spike reports.
 
 ### Option B: {Name}
 
@@ -53,9 +53,9 @@
 - {Con 1}
 - {Con 2}
 
-**Effort Estimate**: {Low/Medium/High}
-
 **Risk Level**: {Low/Medium/High}
+
+**NOTE**: Effort estimates should be in a separate ESTIMATION.md document, not embedded in spike reports.
 
 ### Option C: {Name} (if applicable)
 
@@ -103,14 +103,68 @@
 ## 6. Unknowns & Assumptions
 
 ### Remaining Unknowns
-- {Unknown 1}
-- {Unknown 2}
+- {Unknown 1 - with WHY it's unknowable}
+- {Unknown 2 - with WHY it's unknowable}
 
 ### Assumptions Made
 - {Assumption 1}
 - {Assumption 2}
 
-## 7. Next Steps
+## 7. Satisfactory Criteria Check
+
+This spike is considered satisfactory when it meets all the following criteria:
+
+### Specificity
+- [ ] No vague statements like "may need", "possibly", "approximately" without specific evidence
+- [ ] All components/dependencies individually identified (not grouped as "X items need checking")
+- [ ] Concrete examples provided for all claims
+
+**Evidence**:
+{How this criterion was met - point to specific sections with concrete findings}
+
+### Evidence-Based Claims
+- [ ] All claims backed by file paths, line numbers, URLs, or test results
+- [ ] All code references include actual file locations
+- [ ] All external claims include version numbers and sources
+- [ ] No assumptions presented as facts
+
+**Evidence**:
+{List key claims and their supporting evidence}
+
+### Actionability
+- [ ] Clear, specific next steps based on actual findings
+- [ ] Recommendations include concrete actions (not "investigate more")
+- [ ] Decision criteria clearly defined
+- [ ] No placeholder recommendations
+
+**Evidence**:
+{Point to Next Steps section showing concrete actions}
+
+### Completeness
+- [ ] All identified areas investigated or gaps explicitly documented
+- [ ] All options evaluated against stated criteria
+- [ ] All risks identified with specific evidence
+- [ ] Comparison matrix includes actual data (not estimates or guesses)
+
+**Evidence**:
+{List areas covered and any documented gaps}
+
+### Investigation Depth
+- [ ] Critical dependencies checked individually (repos, changelogs, issues, code)
+- [ ] Integration points traced through actual code
+- [ ] Options validated with actual data (not theoretical assessment)
+- [ ] At least {Medium/Deep} thoroughness rating in fact-check report
+
+**Evidence**:
+{Reference to fact-check report thoroughness assessment}
+
+---
+
+**Overall Satisfactory Assessment**: {YES / NO / PARTIAL}
+
+**If NO or PARTIAL**: {What needs to be addressed before spike is complete}
+
+## 8. Next Steps
 
 If recommendation is approved:
 
@@ -119,6 +173,8 @@ If recommendation is approved:
 3. {Next step 3}
 
 ### Related Documents
+- **Fact Check Report**: `.claude/engineering/fact-checks/FACT-{ID}.md` (REQUIRED)
+- **Estimation**: `.claude/engineering/estimates/ESTIMATE-{ID}.md` (if requested - separate from spike)
 - FRD: {if this leads to a feature}
 - Design: {if design work needed}
 
@@ -129,3 +185,15 @@ If recommendation is approved:
 | Date | Decision Maker | Decision |
 |------|----------------|----------|
 | {date} | {name} | {Approved Option X / Rejected / More investigation needed} |
+
+---
+
+## Important Notes
+
+1. **Estimation is separate**: Do NOT embed time/effort estimates in this spike report. Create a separate ESTIMATION.md document with confidence levels and three-point estimates.
+
+2. **Fact verification required**: Every spike MUST have an accompanying FACT-{ID}.md report that verifies all claims and assesses investigation thoroughness.
+
+3. **Satisfactory criteria must be met**: The spike is not complete until all satisfactory criteria are checked and verified.
+
+4. **POC code is throwaway**: Any proof-of-concept code created during the spike should not be used in production. Implementation should follow the feature workflow.
