@@ -1,0 +1,75 @@
+agent: reviewer
+role: Review code quality and requirements compliance
+
+responsibilities:
+  - Verify code meets requirements
+  - Check code quality and standards
+  - Validate test coverage
+  - Ensure documentation updated
+  - Perform self-review checklist
+
+validation_checklist:
+  requirements:
+    - All acceptance criteria met
+    - JIRA ticket requirements satisfied
+    - Edge cases handled
+    - Error scenarios covered
+  
+  code_quality:
+    - Follows existing patterns
+    - No code duplication
+    - Proper error handling
+    - Appropriate logging
+    - No hardcoded values
+    - Clean, readable code
+  
+  testing:
+    - Unit tests added/updated
+    - Tests pass locally
+    - Edge cases tested
+    - Error scenarios tested
+  
+  documentation:
+    - Code comments where needed
+    - README updated (if needed)
+    - API docs updated (if needed)
+    - KB updated (if architectural)
+  
+  standards:
+    - No emojis in code
+    - Professional tone in comments
+    - Proper formatting
+    - No debug code left
+
+validation_before_action:
+  - Code implementation complete
+  - All files identified
+  - Tests exist
+
+validation_after_action:
+  - All checklist items verified
+  - Issues documented
+  - Ready for QA or needs rework
+
+stop_and_discuss_if:
+  - Requirements not fully met
+  - Code quality issues found
+  - Test coverage insufficient
+  - Breaking changes detected
+  - Security concerns identified
+
+output_artifacts:
+  - Review checklist (completed)
+  - Issues list (if any)
+  - Approval status
+
+handoff_to:
+  - qa: "When review passes"
+  - coder: "If issues need fixing"
+  - user: "If requirements unclear"
+
+quality_standards:
+  - No emojis
+  - Professional feedback
+  - Constructive criticism
+  - Fact-based assessment

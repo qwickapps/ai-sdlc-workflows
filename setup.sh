@@ -1,6 +1,6 @@
 #!/bin/bash
 # setup.sh - Per-project setup for AI SDLC Workflows
-# Usage: ~/.ai-sdlc-workflows/setup.sh --claude [--cursor] [--windsurf] [--aider] [--all]
+# Usage: ~/.ai-sdlc-workflows/setup.sh --claude [--cursor] [--windsurf] [--aider] [--github-copilot] [--all]
 
 set -e
 
@@ -21,18 +21,20 @@ show_help() {
     echo "Usage: $0 [OPTIONS]"
     echo ""
     echo "Options:"
-    echo "  --claude      Set up Claude Code (.claude/)"
-    echo "  --cursor      Set up Cursor (.cursor/)"
-    echo "  --windsurf    Set up Windsurf (.cascade/)"
-    echo "  --aider       Set up Aider (.aider/)"
-    echo "  --all         Set up all supported CLIs"
-    echo "  --target DIR  Target directory (default: current directory)"
-    echo "  --force       Overwrite existing symlinks"
-    echo "  --help, -h    Show this help message"
+    echo "  --claude         Set up Claude Code (.claude/)"
+    echo "  --cursor         Set up Cursor (.cursor/)"
+    echo "  --windsurf       Set up Windsurf (.cascade/)"
+    echo "  --aider          Set up Aider (.aider/)"
+    echo "  --github-copilot Set up GitHub Copilot (.github-copilot/)"
+    echo "  --all            Set up all supported CLIs"
+    echo "  --target DIR     Target directory (default: current directory)"
+    echo "  --force          Overwrite existing symlinks"
+    echo "  --help, -h       Show this help message"
     echo ""
     echo "Examples:"
     echo "  $0 --claude                    # Set up Claude Code only"
     echo "  $0 --claude --windsurf         # Set up Claude and Windsurf"
+    echo "  $0 --github-copilot            # Set up GitHub Copilot only"
     echo "  $0 --all                       # Set up all CLIs"
     echo "  $0 --claude --target ~/myproj  # Set up in specific directory"
 }
@@ -46,7 +48,8 @@ while [[ $# -gt 0 ]]; do
         --cursor) TOOLS+=("cursor") ;;
         --windsurf) TOOLS+=("windsurf") ;;
         --aider) TOOLS+=("aider") ;;
-        --all) TOOLS=("claude" "cursor" "windsurf" "aider") ;;
+        --github-copilot) TOOLS+=("github-copilot") ;;
+        --all) TOOLS=("claude" "cursor" "windsurf" "aider" "github-copilot") ;;
         --target) TARGET_DIR="$2"; shift ;;
         --force) FORCE=true ;;
         --help|-h) show_help; exit 0 ;;
@@ -314,6 +317,72 @@ setup_aider() {
 }
 
 # ============================================================================
+# GITHUB COPILOT SETUP
+# ============================================================================
+setup_github_copilot() {
+    local target="$TARGET_DIR/.github-copilot"
+    echo -e "${BLUE}━━━ GitHub Copilot ━━━${NC}"
+
+    # Create directories
+    mkdir -p "$target/commands" "$target/templates" "$target/rules" \
+             "$target/agents" "$target/validators" "$target/scripts" "$target/memories"
+
+    # Commands
+    echo -e "${CYAN}Commands:${NC}"
+    for file in "$INSTALL_DIR/github-copilot/.github-copilot/commands/"*.md; do
+        [[ -f "$file" ]] && create_link "$file" "$target/commands/$(basename "$file")"
+    done
+
+    # Templates
+    echo -e "${CYAN}Templates:${NC}"
+    for file in "$INSTALL_DIR/github-copilot/.github-copilot/templates/"*.md; do
+        [[ -f "$file" ]] && create_link "$file" "$target/templates/$(basename "$file")"
+    done
+
+    # Rules
+    echo -e "${CYAN}Rules:${NC}"
+    for file in "$INSTALL_DIR/github-copilot/.github-copilot/rules/"*.md; do
+        [[ -f "$file" ]] && create_link "$file" "$target/rules/$(basename "$file")"
+    done
+
+    # Agents
+    echo -e "${CYAN}Agents:${NC}"
+    for file in "$INSTALL_DIR/github-copilot/.github-copilot/agents/"*.md; do
+        [[ -f "$file" ]] && create_link "$file" "$target/agents/$(basename "$file")"
+    done
+
+    # Validators
+    echo -e "${CYAN}Validators:${NC}"
+    for file in "$INSTALL_DIR/github-copilot/.github-copilot/validators/"*.sh; do
+        [[ -f "$file" ]] && create_link "$file" "$target/validators/$(basename "$file")"
+    done
+
+    # Scripts
+    echo -e "${CYAN}Scripts:${NC}"
+    for file in "$INSTALL_DIR/github-copilot/.github-copilot/scripts/"*.sh; do
+        [[ -f "$file" ]] && create_link "$file" "$target/scripts/$(basename "$file")"
+    done
+
+    # Memories
+    echo -e "${CYAN}Memories:${NC}"
+    for file in "$INSTALL_DIR/github-copilot/.github-copilot/memories/"*.md; do
+        [[ -f "$file" ]] && create_link "$file" "$target/memories/$(basename "$file")"
+    done
+
+    # README.md
+    if [[ ! -f "$target/README.md" ]]; then
+        if [[ -f "$INSTALL_DIR/github-copilot/.github-copilot/README.md" ]]; then
+            cp "$INSTALL_DIR/github-copilot/.github-copilot/README.md" "$target/README.md"
+            echo -e "${GREEN}Created README.md${NC}"
+        fi
+    else
+        echo -e "${YELLOW}README.md exists - not modified${NC}"
+    fi
+
+    echo -e "${GREEN}✓ GitHub Copilot setup complete${NC}"
+}
+
+# ============================================================================
 # MAIN EXECUTION
 # ============================================================================
 
@@ -332,6 +401,7 @@ for tool in "${TOOLS[@]}"; do
         cursor) setup_cursor ;;
         windsurf) setup_windsurf ;;
         aider) setup_aider ;;
+        github-copilot) setup_github_copilot ;;
     esac
     echo ""
 done
