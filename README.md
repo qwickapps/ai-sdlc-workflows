@@ -88,10 +88,11 @@ Different phases activate different "agent personas" with specialized focus:
 |------|--------|--------|---------------|
 | [Claude Code](https://claude.ai/code) | ✅ Ready | `/claude` | [Setup Guide](examples/claude-setup.md) |
 | [Windsurf](https://codeium.com/windsurf) | ✅ Ready | `/windsurf` | [Setup Guide](examples/windsurf-setup.md) |
-| [Cursor](https://cursor.com) | Ready | `/cursor` | [Setup Guide](examples/cursor-setup.md) |
-| [Aider](https://aider.chat) | Ready | `/aider` | [Setup Guide](examples/aider-setup.md) |
+| [Cursor](https://cursor.com) | ✅ Ready | `/cursor` | [Setup Guide](examples/cursor-setup.md) |
+| [Aider](https://aider.chat) | ✅ Ready | `/aider` | [Setup Guide](examples/aider-setup.md) |
+| [GitHub Copilot](https://github.com/features/copilot) | ✅ Ready | `/github-copilot` | [Setup Guide](examples/github-copilot-setup.md) |
 
-**New:** Claude and Windsurf workflows now use shared resources (`/shared`) for consistency across tools.
+**All workflows now use shared resources (`/shared`) for consistency across tools.**
 
 ---
 
@@ -132,6 +133,31 @@ Structured templates for all SDLC artifacts:
 - RELEASE.md - Release documentation
 - (Additional templates in `/shared/templates/`)
 
+### Validators (shared/validators/)
+
+Automated validation scripts that enforce quality standards:
+
+- **branch-validator.sh** - Validates branch naming conventions
+- **commit-validator.sh** - Ensures commit messages follow standards
+- **workflow-validator.sh** - Checks workflow compliance
+
+### Knowledge Base (shared/kb/)
+
+Centralized knowledge repository for architectural decisions and project context:
+
+- **index.json** - Knowledge base index
+- **README.md** - KB usage guide
+- **architecture/** - System architecture documentation
+- **components/** - Component specifications
+- **decisions/** - Architectural decision records (ADRs)
+
+### Memories (per-tool)
+
+Contextual memories and ADRs specific to each tool's workflow:
+
+- **ADR-001-SDLC-Workflow-Adoption.md** - Workflow adoption guidelines
+- **ADR-INDEX.md** - Index of architectural decisions
+
 ### Sync Script
 
 Repository maintainers can update all CLI directories with a single command:
@@ -140,9 +166,9 @@ Repository maintainers can update all CLI directories with a single command:
 ./shared/sync-workflows.sh
 ```
 
-This syncs rules and templates from `shared/` to all CLI directories (Claude, Cursor, Windsurf, Aider), ensuring consistency across all tools.
+This syncs rules, templates, validators, knowledge base, and other shared resources from `shared/` to all CLI directories (Claude, Cursor, Windsurf, Aider, GitHub Copilot), ensuring consistency across all tools.
 
-**End users:** Simply copy the desired CLI directory - rules and templates are already synced and ready to use.
+**End users:** Simply copy the desired CLI directory - all shared resources are already synced and ready to use.
 
 ---
 
@@ -175,6 +201,7 @@ cd /path/to/your/project
 ~/.ai-sdlc-workflows/setup.sh --cursor      # Cursor
 ~/.ai-sdlc-workflows/setup.sh --windsurf    # Windsurf
 ~/.ai-sdlc-workflows/setup.sh --aider       # Aider
+~/.ai-sdlc-workflows/setup.sh --github-copilot  # GitHub Copilot
 ~/.ai-sdlc-workflows/setup.sh --all         # All CLIs
 ```
 
@@ -186,6 +213,7 @@ cd C:\path\to\your\project
 ~\.ai-sdlc-workflows\setup.ps1 -Cursor      # Cursor
 ~\.ai-sdlc-workflows\setup.ps1 -Windsurf    # Windsurf
 ~\.ai-sdlc-workflows\setup.ps1 -Aider       # Aider
+~\.ai-sdlc-workflows\setup.ps1 -GitHubCopilot  # GitHub Copilot
 ~\.ai-sdlc-workflows\setup.ps1 -All         # All CLIs
 ```
 
@@ -495,6 +523,7 @@ See the `/examples` folder for detailed setup guides:
 - [Windsurf Setup](examples/windsurf-setup.md)
 - [Cursor Setup](examples/cursor-setup.md)
 - [Aider Setup](examples/aider-setup.md)
+- [GitHub Copilot Setup](examples/github-copilot-setup.md)
 
 ---
 
