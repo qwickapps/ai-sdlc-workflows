@@ -18,8 +18,11 @@ $ARGUMENTS (optional feature description, issue number, or context)
 1. **NEVER skip phases** - each phase requires user approval before proceeding
 2. **NEVER auto-commit** - always wait for explicit user approval
 3. **NEVER add legacy support** unless explicitly requested
-4. **REUSE FIRST** - always check existing solutions before creating new ones
+4. **REUSE FIRST** - always check existing solutions (see RESEARCH-DEPTH.md)
 5. **No attributions** in commit messages
+6. **When blocked** - STOP and discuss (see COMMUNICATION-PROTOCOL.md)
+7. **Validate thoroughly** - build, test, E2E (see VALIDATION-GATES.md)
+8. **Use worktree script** - NEVER use git commands directly (see WORKTREE-ENFORCEMENT.md)
 </critical_rules>
 
 <interactive_setup>
@@ -75,30 +78,39 @@ Do NOT proceed to workspace setup until FRD is approved.
 <workspace_setup>
 ### WORKSPACE SETUP: Create Git Worktree
 
-After FRD approval, set up an isolated workspace using git worktree:
+**STOP:** Follow WORKTREE-ENFORCEMENT.md - NEVER use git commands directly.
 
-1. **Determine branch name** from issue number:
-   - Format: `feature/<ISSUE-NUMBER>` (e.g., `feature/GH-123`, `feature/RS-456`)
+After FRD approval, set up an isolated workspace:
 
-2. **Create git worktree with new branch**:
+1. **Determine worktree name** from issue number:
+   - Format: `feature-<ISSUE-NUMBER>` (e.g., `feature-GH-123`, `feature-RS-456`)
+
+2. **Locate the create-worktree.sh script:**
    ```bash
-   git worktree add ../worktrees/feature/<ISSUE-NUMBER> -b feature/<ISSUE-NUMBER>
-   ```
-   - Creates worktree in `../worktrees/feature/<ISSUE-NUMBER>/`
-   - Creates and checks out new branch `feature/<ISSUE-NUMBER>`
-   - Allows parallel work on multiple features
-
-3. **Change to worktree directory**:
-   ```bash
-   cd ../worktrees/feature/<ISSUE-NUMBER>
+   find . -name "create-worktree.sh" -type f | head -1
+   # OR use known path: .claude/scripts/create-worktree.sh
    ```
 
-4. **All subsequent work happens in this worktree**
+3. **Run the script (MANDATORY):**
+   ```bash
+   .claude/scripts/create-worktree.sh feature-<ISSUE-NUMBER>
+   ```
 
-**Note**: If worktree creation fails (e.g., not in git repo), proceed with regular branch creation instead:
-```bash
-git checkout -b feature/<ISSUE-NUMBER>
-```
+   This script:
+   - Creates worktree in ../qwickapps-wt-feature-<ISSUE-NUMBER>
+   - Copies all .env files
+   - Copies .claude/settings.local.json
+   - Runs pnpm install
+
+4. **Change to worktree directory:**
+   ```bash
+   cd ../qwickapps-wt-feature-<ISSUE-NUMBER>
+   ```
+
+5. **All subsequent work happens in this worktree**
+
+**CRITICAL:** Never use `git worktree add` or `git checkout -b` directly.
+Always use the create-worktree.sh script.
 
 </workspace_setup>
 
@@ -107,16 +119,29 @@ git checkout -b feature/<ISSUE-NUMBER>
 
 Adopt the **architect** agent persona. Your job is to:
 
+**Research Requirements:** Follow RESEARCH-DEPTH.md guidelines:
+- Use Explore agent to understand codebase architecture
+- Use QwickBrain MCP to check existing ADRs/designs
+- Use Grep to find similar patterns
+- Gather evidence before making design decisions
+
 1. **Analyze existing codebase** - REUSE FIRST:
-   - Search for similar patterns, components, utilities
+   - Use Explore agent to find similar patterns/components/utilities
+   - Use QwickBrain to search past ADRs and designs
    - Identify what can be reused vs. what needs to be created
-   - Check `.claude/kb/decisions/` for relevant ADRs
+   - Document findings with file:line evidence
 
 2. **Design the solution**:
    - Define architecture, components, and their interactions
    - Identify options and tradeoffs
    - NO legacy support or fallbacks unless requested
    - Document decisions in ADR format
+
+3. **If blocked or multiple valid approaches:**
+   - STOP immediately
+   - Follow COMMUNICATION-PROTOCOL.md
+   - Present options with pros/cons
+   - Wait for decision before proceeding
 
 3. **Create Design Proposal**:
    - Save to: `.claude/engineering/design/DESIGN-<id>-<short-name>.md`
@@ -183,12 +208,68 @@ Adopt the **coder** agent persona. Your job is to:
    - Document the change in design doc
 </behavior_change_check>
 
-4. **GATE: All tests must pass before proceeding**
+4. **GATE: Validation (MANDATORY - see VALIDATION-GATES.md)**
 
-```
-Run: npm run test (or appropriate test command)
-Do NOT proceed if tests fail.
-```
+   Complete ALL applicable validation steps:
+
+   **Build/Compilation:**
+   ```bash
+   npm run build
+   npm run build:prod     # if different production build
+   ```
+   - [ ] Code compiles without errors
+   - [ ] No critical warnings
+   - [ ] TypeScript type checks pass
+
+   **Unit Tests:**
+   ```bash
+   npm run test
+   npm run test:coverage
+   ```
+   - [ ] All tests pass (new and existing)
+   - [ ] New features have tests
+   - [ ] Coverage maintained or improved
+
+   **Integration Tests:**
+   ```bash
+   npm run test:integration
+   ```
+   - [ ] Integration tests pass
+   - [ ] Component interactions work
+
+   **E2E Validation (CRITICAL):**
+   ```bash
+   # Use ACTUAL deployment build process
+   .github/scripts/build-workspace-package.sh
+
+   # For Docker deployments
+   docker build -t test-feature .
+   docker run -p 3000:3000 test-feature
+   ```
+   - [ ] Tested in production-like environment
+   - [ ] Feature works end-to-end
+   - [ ] No regressions
+   - [ ] User workflow completes successfully
+
+   **For frontend features:**
+   - [ ] Tested in actual browser (use Chrome automation)
+   - [ ] No console errors
+   - [ ] UI renders correctly
+   - [ ] User interactions work
+
+   **For backend/API features:**
+   - [ ] API responds correctly
+   - [ ] Error handling works
+   - [ ] Database changes tested on clean database
+
+   **User Vision Validation:**
+   - [ ] User's actual need is met
+   - [ ] Edge cases handled
+   - [ ] Acceptance criteria satisfied
+
+   **Document validation results before proceeding.**
+
+   **GATE: Do NOT proceed if any validation fails.**
 </phase_4_implementation>
 
 <phase_5_review>

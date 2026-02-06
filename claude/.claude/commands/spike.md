@@ -12,9 +12,11 @@ You are now in **Technical Spike Mode**. Use this for research and investigation
 
 ## CRITICAL RULES
 
-1. **Research first, recommend second** - gather evidence before opinions
+1. **Research first, recommend second** - gather evidence before opinions (see RESEARCH-DEPTH.md)
 2. **Document findings** - spikes produce knowledge, not just code
 3. **Time-box appropriately** - spikes should answer specific questions
+4. **When blocked** - STOP and discuss (see COMMUNICATION-PROTOCOL.md)
+5. **Use proper research tools** - Explore agent, QwickBrain MCP, Chrome (see RESEARCH-DEPTH.md)
 
 ## Interactive Setup
 

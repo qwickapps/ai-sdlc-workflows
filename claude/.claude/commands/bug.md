@@ -12,10 +12,13 @@ You are now in **Bug Fix Mode**. Follow this workflow strictly.
 
 ## CRITICAL RULES
 
-1. **Understand before fixing** - investigate root cause first
+1. **Understand before fixing** - investigate root cause first (see RESEARCH-DEPTH.md)
 2. **NEVER auto-commit** - always wait for explicit user approval
 3. **NEVER add legacy support** or workarounds - fix the actual issue
 4. **No attributions** in commit messages
+5. **When blocked** - STOP and discuss (see COMMUNICATION-PROTOCOL.md)
+6. **Validate thoroughly** - build, test, E2E (see VALIDATION-GATES.md)
+7. **Use worktree script** - NEVER use git commands directly (see WORKTREE-ENFORCEMENT.md)
 
 ## Interactive Setup
 
@@ -40,15 +43,26 @@ Wait for response before proceeding.
 
 ### PHASE 1: Investigation (Quality Engineer + Coder)
 
+**Research Requirements:** Follow RESEARCH-DEPTH.md guidelines:
+- Use Explore agent for unfamiliar code areas
+- Use Grep for specific code patterns
+- Use Chrome automation to verify frontend bugs
+- Use QwickBrain MCP to check for similar past bugs
+- Gather evidence with file:line references
+- No assumptions without verification
+
 1. **Reproduce the bug**:
    - Understand the expected vs actual behavior
    - Identify steps to reproduce
    - Ask clarifying questions if unclear
 
 2. **Root cause analysis**:
-   - Search codebase for relevant code
+   - Use Explore agent to understand affected system
+   - Use Grep to find relevant code
+   - Read actual code, don't assume behavior
+   - Trace execution path
    - Identify the source of the bug
-   - Document findings
+   - Document findings with file:line evidence
 
 3. **Classify the issue**:
    - Is it actually a bug we can fix?
@@ -57,6 +71,12 @@ Wait for response before proceeding.
    - Is it a configuration issue?
 
    If NOT a bug we can fix, skip to explaining the situation to user.
+
+4. **If blocked during investigation:**
+   - STOP immediately
+   - Follow COMMUNICATION-PROTOCOL.md
+   - Present options to user
+   - Wait for decision before proceeding
 
 4. **Create Bug Analysis**:
    - Save to: `.claude/engineering/bugs/BUG-<id>-<short-name>.md`
@@ -96,27 +116,39 @@ Approve to proceed with fix, or provide feedback.
 
 ### WORKSPACE SETUP: Create Git Worktree
 
-After bug analysis approval, set up an isolated workspace using git worktree:
+**STOP:** Follow WORKTREE-ENFORCEMENT.md - NEVER use git commands directly.
 
-1. **Determine branch name** from issue number:
-   - Format: `bugfix/<ISSUE-NUMBER>` (e.g., `bugfix/GH-123`, `bugfix/RS-456`)
+After bug analysis approval, set up an isolated workspace:
 
-2. **Create git worktree with new branch**:
+1. **Determine worktree name** from issue number:
+   - Format: `bugfix-<ISSUE-NUMBER>` (e.g., `bugfix-GH-123`, `bugfix-RS-456`)
+
+2. **Locate the create-worktree.sh script:**
    ```bash
-   git worktree add ../worktrees/bugfix/<ISSUE-NUMBER> -b bugfix/<ISSUE-NUMBER>
+   find . -name "create-worktree.sh" -type f | head -1
+   # OR use known path: .claude/scripts/create-worktree.sh
    ```
 
-3. **Change to worktree directory**:
+3. **Run the script (MANDATORY):**
    ```bash
-   cd ../worktrees/bugfix/<ISSUE-NUMBER>
+   .claude/scripts/create-worktree.sh bugfix-<ISSUE-NUMBER>
    ```
 
-4. **All subsequent work happens in this worktree**
+   This script:
+   - Creates worktree in ../qwickapps-wt-bugfix-<ISSUE-NUMBER>
+   - Copies all .env files
+   - Copies .claude/settings.local.json
+   - Runs pnpm install
 
-**Note**: If worktree creation fails (e.g., not in git repo), proceed with regular branch creation instead:
-```bash
-git checkout -b bugfix/<ISSUE-NUMBER>
-```
+4. **Change to worktree directory:**
+   ```bash
+   cd ../qwickapps-wt-bugfix-<ISSUE-NUMBER>
+   ```
+
+5. **All subsequent work happens in this worktree**
+
+**CRITICAL:** Never use `git worktree add` or `git checkout -b` directly.
+Always use the create-worktree.sh script.
 
 ### PHASE 2: Fix Implementation (Coder)
 
@@ -129,7 +161,76 @@ git checkout -b bugfix/<ISSUE-NUMBER>
    - Test that reproduces the original bug
    - Test passes after fix is applied
 
-3. **GATE: All tests must pass**
+3. **GATE: Validation (MANDATORY - see VALIDATION-GATES.md)**
+
+   Complete ALL applicable validation steps:
+
+   **Build/Compilation:**
+   ```bash
+   npm run build          # or pnpm build, yarn build
+   npm run build:prod     # if different production build exists
+   ```
+   - [ ] Code compiles without errors
+   - [ ] No critical warnings
+   - [ ] TypeScript type checks pass
+
+   **Unit Tests:**
+   ```bash
+   npm run test
+   npm run test:coverage
+   ```
+   - [ ] All existing tests pass
+   - [ ] New regression test passes
+   - [ ] Test coverage maintained or improved
+
+   **Integration Tests (if applicable):**
+   ```bash
+   npm run test:integration
+   ```
+   - [ ] Integration tests pass
+   - [ ] No side effects on other components
+
+   **E2E Validation (CRITICAL):**
+   ```bash
+   # Use ACTUAL deployment build process
+   .github/scripts/build-workspace-package.sh   # or equivalent
+
+   # For Docker deployments
+   docker build -t test-fix .
+   docker run -p 3000:3000 test-fix
+
+   # For database changes
+   npm run migrate   # on CLEAN database, not dev database
+   ```
+   - [ ] Tested in production-like environment
+   - [ ] Bug is actually fixed (not just error message gone)
+   - [ ] No regressions in related functionality
+   - [ ] User's actual problem is solved
+
+   **For frontend bugs:**
+   - [ ] Tested in actual browser (use Chrome automation)
+   - [ ] No console errors
+   - [ ] User workflow works end-to-end
+
+   **User Vision Validation:**
+   - [ ] Original problem solved (not just symptoms)
+   - [ ] Edge cases tested
+   - [ ] No workarounds that could fail
+
+   **Document validation results:**
+   ```markdown
+   ## Validation Results
+
+   Build: ✓ Compiled successfully
+   Unit Tests: ✓ 45/45 passing, coverage 87%
+   Integration Tests: ✓ 12/12 passing
+   E2E: ✓ Tested in Docker, bug fixed, no regressions
+   User Vision: ✓ Original issue (migrations failing) now works on clean database
+
+   Evidence: [logs, screenshots, specific behaviors verified]
+   ```
+
+   **GATE: Do NOT proceed if any validation fails. Fix issues first.**
 
 ### PHASE 3: Review (Reviewer)
 

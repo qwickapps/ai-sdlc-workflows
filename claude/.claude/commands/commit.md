@@ -19,22 +19,57 @@ You are now in **Commit Mode**. Use this for controlled, approved commits.
 
 ## Commit Process
 
-### Step 1: Pre-Commit Verification
+### Step 1: Pre-Commit Verification (MANDATORY - see VALIDATION-GATES.md)
 
 Run these checks before proposing commit:
 
 ```bash
-# Check for uncommitted changes
-git status
+# 1. Build/Compilation check
+npm run build          # or pnpm build, yarn build
+npm run build:prod     # if different production build exists
 
-# Run tests (adjust command as needed)
+# 2. Type checking (for TypeScript)
+tsc --noEmit           # verify types without emitting files
+
+# 3. Run tests
 npm run test
+npm run test:coverage
 
-# Run linting (if applicable)
+# 4. Run linting (if applicable)
 npm run lint
+
+# 5. Check for uncommitted changes
+git status
 ```
 
-**GATE: Do not proceed if tests or lint fail**
+**Validation Checklist:**
+- [ ] Code compiles without errors
+- [ ] TypeScript type checks pass (if applicable)
+- [ ] All tests pass
+- [ ] Test coverage maintained/improved
+- [ ] Linting passes
+- [ ] Build produces expected artifacts
+
+**GATE: Do NOT proceed if any validation fails.**
+
+**For deployment-related changes:**
+```bash
+# Test actual deployment build
+.github/scripts/build-workspace-package.sh   # or equivalent
+
+# For Docker changes
+docker build -t test-commit .
+docker run -p 3000:3000 test-commit
+# Verify startup and basic functionality
+```
+
+**For database changes:**
+```bash
+# Test migrations on CLEAN database
+npm run migrate
+# Verify migrations are idempotent
+npm run migrate  # should run without errors
+```
 
 ### Step 2: Review Changes
 
@@ -42,9 +77,12 @@ npm run lint
    - Files added/modified/deleted
    - Key changes in each file
 
-2. **Verify completeness**:
+2. **Verify completeness** (see VALIDATION-GATES.md for details):
    - [ ] Implementation complete
+   - [ ] Code compiles (dev and prod builds)
    - [ ] Tests written and passing
+   - [ ] Tested in production-like environment
+   - [ ] User's actual problem is solved
    - [ ] README updated (if needed)
    - [ ] CHANGELOG updated (if needed)
    - [ ] ARCHITECTURE updated (if needed)

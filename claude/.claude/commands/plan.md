@@ -17,10 +17,12 @@ Use `/feature`, `/bug`, `/refactor` for more structured workflows.
 
 ## CRITICAL RULES
 
-1. **Analyze before acting** - never jump straight to implementation
+1. **Analyze before acting** - never jump straight to implementation (see RESEARCH-DEPTH.md)
 2. **Present options** - don't assume one approach is correct
 3. **Wait for approval** - user decides the direction
 4. **Think like architect + PM + UX designer**
+5. **When blocked or uncertain** - STOP and discuss (see COMMUNICATION-PROTOCOL.md)
+6. **Research thoroughly** - use Explore agent, QwickBrain MCP (see RESEARCH-DEPTH.md)
 
 ## Interactive Setup
 

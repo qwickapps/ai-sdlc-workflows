@@ -12,11 +12,14 @@ You are now in **Refactoring Mode**. Follow this workflow strictly.
 
 ## CRITICAL RULES
 
-1. **Plan before refactoring** - understand scope and impact
+1. **Plan before refactoring** - understand scope and impact (see RESEARCH-DEPTH.md)
 2. **NEVER auto-commit** - always wait for explicit user approval
 3. **NEVER add legacy support** - clean breaks are OK
 4. **Preserve behavior** - refactoring should not change functionality
 5. **No attributions** in commit messages
+6. **When blocked** - STOP and discuss (see COMMUNICATION-PROTOCOL.md)
+7. **Use worktree script** - NEVER use git commands directly (see WORKTREE-ENFORCEMENT.md)
+8. **Validate thoroughly** - tests must pass before and after (see VALIDATION-GATES.md)
 
 ## Interactive Setup
 
