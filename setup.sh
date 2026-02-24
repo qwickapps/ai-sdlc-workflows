@@ -21,7 +21,8 @@ show_help() {
     echo "Usage: $0 [OPTIONS]"
     echo ""
     echo "Options:"
-    echo "  --claude         Set up Claude Code (.claude/)"
+    echo "  --claude         Set up Claude Code with plugin support (recommended)"
+    echo "  --claude-commands Set up Claude Code with traditional command files"
     echo "  --cursor         Set up Cursor (.cursor/)"
     echo "  --windsurf       Set up Windsurf (.cascade/)"
     echo "  --aider          Set up Aider (.aider/)"
@@ -32,7 +33,8 @@ show_help() {
     echo "  --help, -h       Show this help message"
     echo ""
     echo "Examples:"
-    echo "  $0 --claude                    # Set up Claude Code only"
+    echo "  $0 --claude                    # Set up Claude Code with plugin support"
+    echo "  $0 --claude-commands           # Set up Claude Code with traditional commands"
     echo "  $0 --claude --windsurf         # Set up Claude and Windsurf"
     echo "  $0 --github-copilot            # Set up GitHub Copilot only"
     echo "  $0 --all                       # Set up all CLIs"
@@ -45,6 +47,7 @@ FORCE=false
 while [[ $# -gt 0 ]]; do
     case $1 in
         --claude) TOOLS+=("claude") ;;
+        --claude-commands) TOOLS+=("claude-commands") ;;
         --cursor) TOOLS+=("cursor") ;;
         --windsurf) TOOLS+=("windsurf") ;;
         --aider) TOOLS+=("aider") ;;
@@ -134,7 +137,7 @@ add_gitignore_entries() {
         "*.ai-sdlc-source"
     )
 
-    # Create .gitignore if it doesn't exist
+    # Create .gitignore if it does not exist
     touch "$gitignore"
 
     for entry in "${entries[@]}"; do
@@ -145,11 +148,68 @@ add_gitignore_entries() {
 }
 
 # ============================================================================
-# CLAUDE CODE SETUP
+# CLAUDE CODE SETUP (plugin mode - default)
 # ============================================================================
 setup_claude() {
     local target="$TARGET_DIR/.claude"
-    echo -e "${BLUE}━━━ Claude Code ━━━${NC}"
+    echo -e "${BLUE}━━━ Claude Code (plugin mode) ━━━${NC}"
+
+    # Create directories (no commands directory in plugin mode)
+    mkdir -p "$target/templates" "$target/rules" \
+             "$target/agents" "$target/validators" "$target/engineering"
+
+    # Templates
+    echo -e "${CYAN}Templates:${NC}"
+    for file in "$INSTALL_DIR/shared/templates/"*.md; do
+        [[ -f "$file" ]] && create_link "$file" "$target/templates/$(basename "$file")"
+    done
+
+    # Rules
+    echo -e "${CYAN}Rules:${NC}"
+    for file in "$INSTALL_DIR/shared/rules/"*.md; do
+        [[ -f "$file" ]] && create_link "$file" "$target/rules/$(basename "$file")"
+    done
+
+    # Agents
+    echo -e "${CYAN}Agents:${NC}"
+    for file in "$INSTALL_DIR/shared/agents/"*.md; do
+        [[ -f "$file" ]] && create_link "$file" "$target/agents/$(basename "$file")"
+    done
+
+    # Validators
+    echo -e "${CYAN}Validators:${NC}"
+    for file in "$INSTALL_DIR/shared/validators/"*.sh; do
+        [[ -f "$file" ]] && create_link "$file" "$target/validators/$(basename "$file")"
+    done
+
+    # CLAUDE.md
+    if [[ ! -f "$TARGET_DIR/CLAUDE.md" ]]; then
+        if [[ -f "$INSTALL_DIR/claude/CLAUDE.md.template" ]]; then
+            cp "$INSTALL_DIR/claude/CLAUDE.md.template" "$TARGET_DIR/CLAUDE.md"
+            echo -e "${GREEN}Created CLAUDE.md from template${NC}"
+        fi
+    else
+        echo -e "${YELLOW}CLAUDE.md exists - not modified${NC}"
+    fi
+
+    echo -e "${GREEN}✓ Claude Code setup complete${NC}"
+    echo ""
+    echo -e "${BLUE}Plugin Mode (recommended):${NC}"
+    echo "The qwickapps-sdlc plugin provides slash commands, 23 auto-loading skills, and 8 agent personas."
+    echo ""
+    echo "Install the plugin in Claude Code:"
+    echo "  /plugin  ->  Install  ->  claude-plugins-qwickapps  ->  qwickapps-sdlc"
+    echo ""
+    echo -e "${CYAN}For traditional command files instead, re-run with: setup.sh --claude-commands${NC}"
+}
+
+# ============================================================================
+# CLAUDE CODE SETUP (traditional commands mode - fallback)
+# ============================================================================
+setup_claude_commands() {
+    local target="$TARGET_DIR/.claude"
+    echo -e "${BLUE}━━━ Claude Code (traditional commands) ━━━${NC}"
+    echo -e "${CYAN}Installing traditional command files (use --claude for plugin mode instead)${NC}"
 
     # Create directories
     mkdir -p "$target/commands" "$target/templates" "$target/rules" \
@@ -394,10 +454,14 @@ echo -e "Target: ${CYAN}$TARGET_DIR${NC}"
 echo -e "Source: ${CYAN}$INSTALL_DIR${NC}"
 echo ""
 
+# Track whether plugin mode was used for next steps output
+PLUGIN_MODE=false
+
 # Execute setup for selected tools
 for tool in "${TOOLS[@]}"; do
     case $tool in
-        claude) setup_claude ;;
+        claude) setup_claude; PLUGIN_MODE=true ;;
+        claude-commands) setup_claude_commands ;;
         cursor) setup_cursor ;;
         windsurf) setup_windsurf ;;
         aider) setup_aider ;;
@@ -416,17 +480,26 @@ echo -e "${GREEN}║           Setup Complete!              ║${NC}"
 echo -e "${GREEN}╚════════════════════════════════════════╝${NC}"
 echo ""
 echo -e "${BLUE}Next steps:${NC}"
-echo "  1. Customize project config files (CLAUDE.md, etc.)"
-echo "  2. Add project-specific commands/templates as needed"
-echo "  3. Start using workflows: /feature, /bug, /plan, etc."
+if [[ "$PLUGIN_MODE" == "true" ]]; then
+    echo "  1. Install the qwickapps-sdlc plugin in Claude Code:"
+    echo "       /plugin  ->  Install  ->  claude-plugins-qwickapps  ->  qwickapps-sdlc"
+    echo "  2. Customize CLAUDE.md for your project"
+    echo "  3. Update the framework when needed: $INSTALL_DIR/update.sh"
+else
+    echo "  1. Customize project config files (CLAUDE.md, etc.)"
+    echo "  2. Add project-specific commands/templates as needed"
+    echo "  3. Start using workflows: /feature, /bug, /plan, etc."
+fi
 echo ""
-echo -e "${BLUE}To add custom commands:${NC}"
-echo "  Create .claude/commands/my-command.md (not a symlink)"
-echo ""
-echo -e "${BLUE}To override a base command:${NC}"
-echo "  rm .claude/commands/bug.md  # Remove symlink"
-echo "  # Then create your own .claude/commands/bug.md"
-echo ""
+if [[ "$PLUGIN_MODE" != "true" ]]; then
+    echo -e "${BLUE}To add custom commands:${NC}"
+    echo "  Create .claude/commands/my-command.md (not a symlink)"
+    echo ""
+    echo -e "${BLUE}To override a base command:${NC}"
+    echo "  rm .claude/commands/bug.md  # Remove symlink"
+    echo "  # Then create your own .claude/commands/bug.md"
+    echo ""
+fi
 echo -e "${BLUE}To update the framework:${NC}"
 echo "  $INSTALL_DIR/update.sh"
 echo ""

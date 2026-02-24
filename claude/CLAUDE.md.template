@@ -4,8 +4,8 @@
   This file configures AI assistant behavior for your project.
   Customize the sections below for your specific needs.
 
-  The SDLC Workflows section is managed by ai-sdlc-workflows.
-  To update it, run: ~/.ai-sdlc-workflows/update.sh
+  Quality rules are managed by ai-sdlc-workflows. SDLC commands come from the qwickapps-sdlc plugin.
+  To update quality rules, run: ~/.ai-sdlc-workflows/update.sh
 -->
 
 ## Project Overview
@@ -59,8 +59,8 @@
 ### 1. NEVER Auto-Commit
 ```
 STOP. Did the user explicitly say "approved" or "commit"?
-If NO → Do NOT commit. Show diff and wait for approval.
-If YES → Proceed with commit.
+If NO -> Do NOT commit. Show diff and wait for approval.
+If YES -> Proceed with commit.
 ```
 
 ### 2. NEVER Add Legacy Support
@@ -104,32 +104,27 @@ After implementation, update:
 
 ## SDLC Workflows
 
-Use slash commands to enforce proper workflows:
+This project uses the **qwickapps-sdlc** plugin for Claude Code.
 
-| Command | When to Use |
-|---------|-------------|
-| `/feature` | New feature development (full SDLC) |
-| `/bug` | Bug investigation and fix |
-| `/refactor` | Code restructuring |
-| `/spike` | Technical research/investigation |
-| `/release` | Version release management |
-| `/code-review` | Code review before commit |
-| `/commit` | Controlled commit with approval |
-| `/plan` | Quick planning for smaller tasks |
+### Required Plugin
 
-### Workflow Agents
+Install the `qwickapps-sdlc` plugin if not already installed:
+```
+/plugin  ->  Install  ->  claude-plugins-qwickapps  ->  qwickapps-sdlc
+```
 
-Each workflow phase uses the appropriate agent persona:
+The plugin provides:
+- **9 slash commands**: /feature, /bug, /research, /refactor, /chore, /review, /commit, /release, /docs
+- **23 auto-loading skills**: debugging, writing-tests, brainstorming, executing-plans, and more
+- **8 agent personas**: architect, coder, quality-engineer, tech-writer, and more
+- **Quality rules**: Loaded from .claude/rules/ (symlinked from ai-sdlc-workflows)
 
-| Phase | Agent | Focus |
-|-------|-------|-------|
-| Requirements | product-manager | Gather needs, define scope |
-| Design | architect | Technical design, REUSE FIRST |
-| Test Strategy | quality-engineer | Test planning, edge cases |
-| Implementation | coder | Clean code, no legacy support |
-| Review | reviewer | Quality, security, patterns |
-| Documentation | tech-writer | README, CHANGELOG, docs |
-| Coordination | engineering-manager | Multi-team, releases |
+### Fallback: Traditional Commands
+
+If the plugin is not available, traditional command files can be installed:
+```bash
+~/.ai-sdlc-workflows/setup.sh --claude-commands
+```
 
 ---
 
@@ -137,7 +132,6 @@ Each workflow phase uses the appropriate agent persona:
 
 ```
 .claude/
-├── commands/           # Slash commands (symlinks to framework + local)
 ├── templates/          # Document templates (symlinks to framework + local)
 ├── rules/              # Quality rules (symlinks to framework + local)
 ├── agents/             # Agent definitions (symlinks to framework)
@@ -152,33 +146,11 @@ Each workflow phase uses the appropriate agent persona:
 └── settings.local.json # Personal settings (NOT committed)
 ```
 
+Note: SDLC slash commands come from the qwickapps-sdlc plugin, not from a local commands/ directory.
+
 ---
 
 ## Customization
-
-### Adding Custom Commands
-
-Create a new file in `.claude/commands/` (not a symlink):
-
-```bash
-# Create local command
-cat > .claude/commands/my-command.md << 'EOF'
----
-description: My custom command
----
-# My Command
-
-## Steps
-1. Do something
-2. Do something else
-EOF
-```
-
-### Overriding Framework Commands
-
-1. Remove the symlink: `rm .claude/commands/bug.md`
-2. Create your own version: `touch .claude/commands/bug.md`
-3. Edit as needed
 
 ### Adding Project-Specific Rules
 
@@ -194,6 +166,8 @@ cat > .claude/rules/PROJECT-CONVENTIONS.md << 'EOF'
 ...
 EOF
 ```
+
+To customize workflows, create project-specific rules in `.claude/rules/` or override the plugin's behavior with local settings.
 
 ---
 

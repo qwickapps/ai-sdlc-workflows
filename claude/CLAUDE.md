@@ -54,14 +54,17 @@ Use slash commands to enforce proper workflows:
 
 | Command | When to Use |
 |---------|-------------|
-| `/feature` | New feature development (full SDLC) |
+| `/feature` | Full SDLC feature development |
 | `/bug` | Bug investigation and fix |
+| `/research` | Technical research and investigation |
 | `/refactor` | Code restructuring |
-| `/spike` | Technical research/investigation |
-| `/release` | Version release management |
-| `/code-review` | Code review before commit |
+| `/chore` | Maintenance tasks |
+| `/review` | Code review |
 | `/commit` | Controlled commit with approval |
-| `/plan` | Quick planning for smaller tasks |
+| `/release` | Version release management |
+| `/docs` | Documentation updates |
+
+These commands are available via the qwickapps-sdlc plugin or as traditional command files.
 
 ### Workflow Agents
 

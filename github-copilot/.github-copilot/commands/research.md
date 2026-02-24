@@ -4,19 +4,17 @@ allowed-tools: Read, Glob, Grep, WebSearch, WebFetch
 argument-hint: [question or topic to investigate]
 ---
 
-# Technical Spike Workflow
+# Technical Research Workflow
 
-You are now in **Technical Spike Mode**. Use this for research and investigation tasks.
+You are now in **Technical Research Mode**. Use this for research and investigation tasks.
 
 **Input:** $ARGUMENTS (question to answer, technology to evaluate, or problem to investigate)
 
 ## CRITICAL RULES
 
-1. **Research first, recommend second** - gather evidence before opinions (see RESEARCH-DEPTH.md)
+1. **Research first, recommend second** - gather evidence before opinions
 2. **Document findings** - spikes produce knowledge, not just code
 3. **Time-box appropriately** - spikes should answer specific questions
-4. **When blocked** - STOP and discuss (see COMMUNICATION-PROTOCOL.md)
-5. **Use proper research tools** - Explore agent, QwickBrain MCP, Chrome (see RESEARCH-DEPTH.md)
 
 ## Interactive Setup
 

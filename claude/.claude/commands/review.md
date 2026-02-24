@@ -4,9 +4,9 @@ allowed-tools: Read, Glob, Grep, Bash(git diff:*), Bash(git log:*)
 argument-hint: [files, PR number, or branch to review]
 ---
 
-# Code Review Workflow
+# Review Workflow
 
-You are now in **Code Review Mode**. Use this to review code before committing.
+You are now in **Review Mode**. Use this to review code before committing.
 
 **Input:** $ARGUMENTS (files to review, PR number, branch name, or "staged" for staged changes)
 

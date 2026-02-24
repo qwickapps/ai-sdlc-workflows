@@ -82,6 +82,14 @@ Different phases activate different "agent personas" with specialized focus:
 
 ---
 
+## Plugin Support
+
+Claude Code users can install the **qwickapps-sdlc** plugin instead of copying the traditional command files. The plugin provides the same SDLC workflows as slash commands with automatic updates.
+
+To use the plugin approach with Claude Code, install via the Claude Code plugin registry and the commands become available immediately. All other tools (Cursor, Windsurf, Aider, GitHub Copilot) continue to use the traditional file-based approach.
+
+---
+
 ## Supported Tools
 
 | Tool | Status | Folder | Documentation |
@@ -126,7 +134,7 @@ Structured templates for all SDLC artifacts:
 **Enhanced Templates (New):**
 - **ESTIMATION.md** - Effort estimation with three-point estimates and confidence levels
 - **FACT-CHECK.md** - Fact verification reports with thoroughness assessment
-- **SPIKE.md** - Enhanced spike investigation template with fact-checking integration
+- **SPIKE.md** - Research/investigation template with fact-checking integration (used by `/research`)
 - **STYLE-GUIDE.md** - Professional writing guidelines for documentation
 
 **Other Templates:**
@@ -247,7 +255,7 @@ cp claude/CLAUDE.md your-project/CLAUDE.md
 echo ".claude/engineering/" >> your-project/.gitignore
 ```
 
-**Usage:** `/feature`, `/bug`, `/plan`, `/refactor`, `/commit`, `/spike`, `/release`
+**Usage:** `/feature`, `/bug`, `/research`, `/refactor`, `/chore`, `/review`, `/commit`, `/release`, `/docs`
 
 ### Windsurf
 
@@ -302,6 +310,22 @@ For improving code structure without changing behavior.
 
 **Phases:** Analyze → Propose → Impact Assessment → Implement → Verify → Commit
 
+### Research - Technical Investigation
+For researching technologies, evaluating options, and answering technical questions.
+
+**Phases:** Define Scope → Research → Document Findings → Decision
+
+### Review - Code Review
+For reviewing code quality before committing or merging.
+
+**Phases:** Understand Context → Review Code → Create Report → Resolution
+
+### Chore - Maintenance Tasks
+For dependency updates, configuration changes, and other maintenance work.
+
+### Docs - Documentation Updates
+For writing, updating, or restructuring documentation.
+
 ---
 
 ## Tool-Specific Details
@@ -309,7 +333,7 @@ For improving code structure without changing behavior.
 All tools share the same folder structure (rules, templates, agents, memories, engineering) but have tool-specific activation methods:
 
 ### Claude Code
-- Uses slash commands: `/feature`, `/bug`, `/plan`, `/refactor`, `/commit`, `/release`, `/spike`
+- Uses slash commands: `/feature`, `/bug`, `/research`, `/refactor`, `/chore`, `/review`, `/commit`, `/release`, `/docs`
 - Commands defined in `.claude/commands/`
 - Includes `COMMAND-PATTERNS.md` guide for creating custom commands
 - [Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code)
@@ -386,7 +410,7 @@ ai-sdlc-workflows/
 - `TEST-PLAN.md` - Test Strategy
 - `REVIEW.md` - Code Review Report
 - `BUG.md` - Bug Analysis
-- `SPIKE.md` - Investigation Report
+- `SPIKE.md` - Research/Investigation Report
 - `RELEASE.md` - Release Document
 
 #### `agents/`
