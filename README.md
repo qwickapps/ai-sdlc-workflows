@@ -99,6 +99,7 @@ To use the plugin approach with Claude Code, install via the Claude Code plugin 
 | [Cursor](https://cursor.com) | ✅ Ready | `/cursor` | [Setup Guide](examples/cursor-setup.md) |
 | [Aider](https://aider.chat) | ✅ Ready | `/aider` | [Setup Guide](examples/aider-setup.md) |
 | [GitHub Copilot](https://github.com/features/copilot) | ✅ Ready | `/github-copilot` | [Setup Guide](examples/github-copilot-setup.md) |
+| [OpenAI Codex](https://github.com/openai/codex) | ✅ Ready | `/codex` | [codex-plugins](https://github.com/qwickapps/codex-plugins) |
 
 **All workflows now use shared resources (`/shared`) for consistency across tools.**
 
